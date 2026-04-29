@@ -879,7 +879,7 @@
                     src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0"
                     allowfullscreen
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    title="B-STYLE Playlist">
+                    title="Playlist">
                 </iframe>
             </div>
         </div>
@@ -918,7 +918,7 @@
 
         </div>
         <div class="footer-bot">
-            <div>© 2026 B-STYLE CREW. ALL RIGHTS RESERVED.</div>
+            <div>© 2026 dance crew EAGLE. ALL RIGHTS RESERVED.</div>
             <div>MADE WITH ♥ IN TOKYO</div>
         </div>
     </footer>
@@ -1396,7 +1396,7 @@
         function renderMarquee(events) {
             const track = document.getElementById('marquee-track');
             const items = (events || []).slice(0, 5).map(e => e.title).filter(Boolean);
-            const list = items.length ? items : ['B-STYLE CREW', 'BREAK THE BEAT', 'TOKYO BREAKING'];
+            const list = items.length ? items : ['dance crew EAGLE', 'BREAK', 'TOKYO BREAKING'];
             const content = list.map(t => `${t} <span class="dot">●</span>`).join(' ');
             track.innerHTML = `<span>${content}</span><span>${content}</span>`;
         }
@@ -1427,9 +1427,9 @@
             const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0a0a0a"/><rect x="80" y="80" width="352" height="352" fill="none" stroke="#00ffcc" stroke-width="32"/><text x="256" y="360" font-family="Arial,sans-serif" font-size="320" font-weight="900" fill="#00ffcc" text-anchor="middle">B</text></svg>`;
             const iconUri = 'data:image/svg+xml;base64,' + btoa(iconSvg);
             const manifest = {
-                name: "B-STYLE CREW",
-                short_name: "B-STYLE",
-                description: "ブレイキンサークル B-STYLE CREW",
+                name: "dance crew EAGLE",
+                short_name: "EAGLE",
+                description: "Break",
                 start_url: ".",
                 display: "standalone",
                 orientation: "portrait-primary",
