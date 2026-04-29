@@ -4,40 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B-STYLE CREW | BREAK THE BEAT</title>
-    <meta name="description" content="B-STYLE CREW - ブレイキンサークル。練習スケジュール・イベント情報・最新情報。">
+    <meta name="description" content="B-STYLE CREW - ブレイキンサークル。練習スケジュール・大会情報・最新情報。">
 
-    <!-- Google Fonts: Antonで尖らせ、Noto Sans JPで読みやすさ、JetBrains Monoでデータ感 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ============================
-           DESIGN TOKENS
-           ============================ */
         :root {
             --bg: #0a0a0a;
             --bg-elev: #141414;
             --bg-card: #181818;
             --line: #262626;
+            --line-bright: #3a3a3a;
             --text: #fafafa;
             --text-dim: #888;
             --text-mute: #555;
             --cyan: #00ffcc;
+            --cyan-dim: #00b38f;
             --cyan-glow: rgba(0, 255, 204, 0.4);
             --magenta: #ff2e63;
             --magenta-glow: rgba(255, 46, 99, 0.4);
+            --yellow: #ffd60a;
+            --green: #2dd4bf;
+            --red: #ff3b30;
 
             --font-display: 'Anton', 'Noto Sans JP', sans-serif;
             --font-body: 'Noto Sans JP', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
 
-            --container: 1200px;
+            --container: 1240px;
         }
 
-        /* ============================
-           BASE
-           ============================ */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
         body {
@@ -48,11 +46,9 @@
             overflow-x: hidden;
             font-weight: 400;
         }
-        /* 全面に薄いグレインノイズを乗せる */
         body::before {
             content: '';
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             pointer-events: none;
             z-index: 9999;
             opacity: 0.04;
@@ -64,13 +60,11 @@
         img { max-width: 100%; display: block; }
         ::selection { background: var(--cyan); color: #000; }
 
-        /* ============================
-           HEADER
-           ============================ */
+        /* ============================ HEADER ============================ */
         header {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 18px 32px;
-            background: rgba(10, 10, 10, 0.75);
+            background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             display: flex; justify-content: space-between; align-items: center;
@@ -105,9 +99,7 @@
         .nav-links a:hover { color: var(--text); }
         .nav-links a:hover::after { width: 100%; }
 
-        /* ============================
-           HERO
-           ============================ */
+        /* ============================ HERO ============================ */
         .hero {
             min-height: 100vh;
             display: flex; flex-direction: column;
@@ -119,8 +111,7 @@
         }
         .hero::before {
             content: '';
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background:
                 radial-gradient(ellipse at 20% 30%, rgba(0,255,204,0.15), transparent 50%),
                 radial-gradient(ellipse at 80% 70%, rgba(255,46,99,0.12), transparent 50%),
@@ -129,20 +120,12 @@
             background-attachment: fixed;
             z-index: -1;
         }
-        /* スキャンライン的なオーバーレイ */
         .hero::after {
             content: '';
             position: absolute; inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 3px,
-                rgba(255,255,255,0.015) 3px,
-                rgba(255,255,255,0.015) 4px
-            );
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.015) 3px, rgba(255,255,255,0.015) 4px);
             pointer-events: none;
         }
-
         .hero-eyebrow {
             font-family: var(--font-mono);
             font-size: 12px;
@@ -153,10 +136,7 @@
             display: flex; align-items: center; gap: 12px;
             opacity: 0; animation: slideInFade .8s .2s forwards;
         }
-        .hero-eyebrow::before {
-            content: ''; width: 32px; height: 2px; background: var(--cyan);
-        }
-
+        .hero-eyebrow::before { content: ''; width: 32px; height: 2px; background: var(--cyan); }
         .hero h1 {
             font-size: clamp(4rem, 13vw, 11rem);
             line-height: 0.88;
@@ -164,9 +144,7 @@
             margin-bottom: 32px;
             text-transform: uppercase;
         }
-        .hero h1 .line {
-            display: block; overflow: hidden;
-        }
+        .hero h1 .line { display: block; overflow: hidden; }
         .hero h1 .word {
             display: inline-block;
             transform: translateY(110%);
@@ -174,7 +152,6 @@
         }
         .hero h1 .word:nth-child(2) { animation-delay: .1s; }
         .hero h1 .line:nth-child(2) .word { animation-delay: .25s; color: var(--cyan); }
-
         .hero-meta {
             display: flex; flex-wrap: wrap; gap: 20px 40px;
             font-family: var(--font-mono);
@@ -186,26 +163,65 @@
             opacity: 0; animation: slideInFade .8s .8s forwards;
         }
         .hero-meta strong { color: var(--text); font-weight: 700; letter-spacing: 1px; }
-
         @keyframes slideUp { to { transform: translateY(0); } }
         @keyframes slideInFade { to { opacity: 1; } }
 
-        /* ============================
-           MARQUEE (上に流れるイベントテロップ)
-           ============================ */
+        /* ============================ COUNTDOWN ============================ */
+        .countdown-bar {
+            background: var(--bg-elev);
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            padding: 28px 8vw;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .countdown-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+        .countdown-event {
+            font-family: var(--font-display);
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            color: var(--text);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .countdown-event .accent { color: var(--magenta); }
+        .countdown-timer {
+            display: flex; gap: 16px;
+            font-family: var(--font-mono);
+        }
+        .countdown-unit {
+            text-align: center;
+            min-width: 60px;
+        }
+        .countdown-unit .num {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--cyan);
+            line-height: 1;
+        }
+        .countdown-unit .lbl {
+            font-size: 10px;
+            color: var(--text-mute);
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        /* ============================ MARQUEE ============================ */
         .marquee {
             background: var(--cyan);
             color: #000;
             padding: 14px 0;
             overflow: hidden;
             white-space: nowrap;
-            border-top: 1px solid var(--cyan);
-            border-bottom: 1px solid var(--cyan);
         }
         .marquee-track {
-            display: inline-flex;
-            gap: 50px;
-            animation: marquee 35s linear infinite;
+            display: inline-flex; gap: 50px;
+            animation: marquee 40s linear infinite;
             font-family: var(--font-display);
             font-size: 22px;
             letter-spacing: 3px;
@@ -217,9 +233,7 @@
             to { transform: translateX(-50%); }
         }
 
-        /* ============================
-           SECTIONS
-           ============================ */
+        /* ============================ SECTIONS ============================ */
         section {
             padding: 120px 8vw;
             max-width: var(--container);
@@ -247,15 +261,14 @@
         }
         .section-num strong { color: var(--cyan); }
 
-        /* ============================
-           SCHEDULE
-           ============================ */
+        /* ============================ SCHEDULE ============================ */
         .sheet-status {
             font-family: var(--font-mono);
             font-size: 11px;
             color: var(--text-mute);
             margin-bottom: 24px;
             display: flex; align-items: center; gap: 10px;
+            flex-wrap: wrap;
         }
         .sheet-status .pulse {
             width: 8px; height: 8px; border-radius: 50%;
@@ -267,7 +280,6 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.85); }
         }
-
         .schedule-list {
             display: flex; flex-direction: column;
             border-top: 1px solid var(--line);
@@ -291,9 +303,7 @@
         }
         .schedule-row:hover::before { opacity: 1; }
         .schedule-row:hover { padding-left: 12px; }
-
         .schedule-row.is-past { opacity: 0.35; }
-
         .sch-day {
             font-family: var(--font-display);
             font-size: 3rem;
@@ -336,7 +346,6 @@
             border-radius: 2px;
             color: var(--text);
         }
-
         .empty-state {
             font-family: var(--font-mono);
             text-align: center;
@@ -364,21 +373,58 @@
             100% { background-position: -200% 0; }
         }
 
-        /* ============================
-           EVENTS
-           ============================ */
+        /* ============================ EVENTS / BATTLES ============================ */
+        .events-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .filter-tabs {
+            display: flex; gap: 4px;
+            background: var(--bg-elev);
+            border: 1px solid var(--line);
+            padding: 4px;
+            border-radius: 2px;
+        }
+        .filter-tab {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all .2s;
+            text-transform: uppercase;
+        }
+        .filter-tab:hover { color: var(--text); }
+        .filter-tab.active {
+            background: var(--cyan);
+            color: #000;
+        }
+        .events-meta {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-mute);
+            letter-spacing: 1px;
+        }
+        .events-meta strong { color: var(--cyan); }
+
         .events-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
         }
         .event-card {
             background: var(--bg-card);
-            padding: 32px 28px 28px;
+            padding: 28px 26px 24px;
             border: 1px solid var(--line);
             position: relative;
             overflow: hidden;
-            transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s;
+            transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s, background .35s;
             display: flex; flex-direction: column;
         }
         .event-card::before {
@@ -389,16 +435,47 @@
             transition: width .35s;
         }
         .event-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             border-color: var(--cyan);
+            background: #1c1c1c;
         }
         .event-card:hover::before { width: 6px; }
         .event-card.featured {
-            background: linear-gradient(135deg, var(--bg-card), #1f1418);
+            background: linear-gradient(135deg, #1f1418, var(--bg-card));
             grid-column: span 2;
+            min-height: 320px;
         }
         .event-card.featured::before { background: var(--magenta); }
         .event-card.featured:hover { border-color: var(--magenta); }
+
+        /* ステータスバッジ */
+        .event-status {
+            position: absolute;
+            top: 16px; right: 16px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 5px 9px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .event-status::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+        }
+        .event-status.confirmed { background: rgba(0,255,204,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+        .event-status.confirmed::before { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+        .event-status.tba { background: rgba(255,214,10,0.1); color: var(--yellow); border: 1px solid var(--yellow); }
+        .event-status.tba::before { background: var(--yellow); }
+        .event-status.entry { background: rgba(255,46,99,0.1); color: var(--magenta); border: 1px solid var(--magenta); animation: blinkBg 2s infinite; }
+        .event-status.entry::before { background: var(--magenta); }
+        .event-status.closed { background: rgba(120,120,120,0.1); color: var(--text-mute); border: 1px solid var(--text-mute); }
+        .event-status.closed::before { background: var(--text-mute); }
+        @keyframes blinkBg {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,46,99,0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(255,46,99,0); }
+        }
 
         .event-tag {
             font-family: var(--font-mono);
@@ -415,46 +492,102 @@
             font-size: 13px;
             color: var(--text);
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             letter-spacing: 1px;
         }
+        .event-date .countdown {
+            display: inline-block;
+            margin-left: 8px;
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: 400;
+        }
         .event-title {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             text-transform: uppercase;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             line-height: 1.1;
         }
         .event-card.featured .event-title { font-size: 2.4rem; }
         .event-desc {
             color: var(--text-dim);
-            font-size: 14px;
-            margin-bottom: 20px;
+            font-size: 13px;
+            margin-bottom: 18px;
             flex-grow: 1;
         }
+
+        /* 出場者リスト */
+        .battlers {
+            margin-bottom: 16px;
+            padding: 14px;
+            background: rgba(0,0,0,0.3);
+            border-left: 2px solid var(--cyan);
+        }
+        .event-card.featured .battlers { border-left-color: var(--magenta); }
+        .battlers-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .battlers-list {
+            display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .battler {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text);
+            padding: 4px 8px;
+            background: var(--bg-elev);
+            border: 1px solid var(--line);
+            border-radius: 2px;
+        }
+        .battler.star { color: var(--cyan); border-color: var(--cyan); }
+        .battler.star::before { content: '★ '; }
+
         .event-meta {
             font-family: var(--font-mono);
             font-size: 11px;
             color: var(--text-mute);
-            display: flex; flex-direction: column; gap: 6px;
+            display: flex; flex-direction: column; gap: 5px;
             border-top: 1px solid var(--line);
-            padding-top: 16px;
+            padding-top: 14px;
         }
         .event-meta div { display: flex; gap: 8px; align-items: center; }
         .event-meta strong { color: var(--text); font-weight: 700; min-width: 60px; }
-        .event-link {
+        .event-actions {
+            display: flex; gap: 12px; margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .event-link, .event-cal {
             font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--cyan);
-            margin-top: 12px;
-            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 11px;
             font-weight: 700;
             letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid var(--line);
+            transition: all .2s;
+            cursor: pointer;
         }
-        .event-link:hover { text-decoration: underline; }
+        .event-link { color: var(--cyan); border-color: var(--cyan); }
+        .event-link:hover { background: var(--cyan); color: #000; }
+        .event-cal { color: var(--text-dim); background: transparent; }
+        .event-cal:hover { color: var(--text); border-color: var(--text-dim); }
 
-        /* ============================
-           INSTAGRAM
-           ============================ */
+        .event-updated {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-mute);
+            margin-top: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* ============================ INSTAGRAM ============================ */
         .insta-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -475,8 +608,7 @@
         }
         .insta-item::after {
             content: 'VIEW';
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
             font-family: var(--font-mono);
             font-size: 11px;
@@ -490,9 +622,7 @@
         .insta-item:hover img { transform: scale(1.08); filter: grayscale(0) brightness(1); }
         .insta-item:hover::after { opacity: 1; }
 
-        /* ============================
-           FOOTER
-           ============================ */
+        /* ============================ FOOTER ============================ */
         footer {
             background: var(--bg-elev);
             padding: 60px 8vw 30px;
@@ -531,11 +661,7 @@
         }
         .footer-col ul { list-style: none; }
         .footer-col li { margin-bottom: 8px; }
-        .footer-col a {
-            font-size: 14px;
-            color: var(--text);
-            transition: color .2s;
-        }
+        .footer-col a { font-size: 14px; color: var(--text); transition: color .2s; }
         .footer-col a:hover { color: var(--cyan); }
         .footer-bot {
             max-width: var(--container);
@@ -549,9 +675,7 @@
             letter-spacing: 1px;
         }
 
-        /* ============================
-           ANIMATION UTILS
-           ============================ */
+        /* ============================ ANIMATION ============================ */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -559,9 +683,7 @@
         }
         .reveal.show { opacity: 1; transform: translateY(0); }
 
-        /* ============================
-           RESPONSIVE
-           ============================ */
+        /* ============================ RESPONSIVE ============================ */
         @media (max-width: 880px) {
             header { padding: 14px 20px; }
             .nav-links { gap: 18px; }
@@ -570,21 +692,18 @@
             .hero-meta { gap: 12px 24px; font-size: 11px; }
             section { padding: 80px 6vw; }
             .section-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .countdown-bar { flex-direction: column; align-items: flex-start; padding: 24px 6vw; }
+            .countdown-unit { min-width: 50px; }
+            .countdown-unit .num { font-size: 1.8rem; }
             .schedule-row {
                 grid-template-columns: 70px 1fr;
                 gap: 12px 16px;
                 padding: 18px 0;
             }
             .sch-day { font-size: 2.2rem; }
-            .sch-time, .sch-loc, .sch-memo {
-                grid-column: 2;
-                text-align: left;
-            }
+            .sch-time, .sch-loc, .sch-memo { grid-column: 2; text-align: left; }
             .sch-memo .tag { font-size: 11px; }
-            .skeleton-row {
-                grid-template-columns: 70px 1fr;
-                gap: 12px 16px;
-            }
+            .skeleton-row { grid-template-columns: 70px 1fr; gap: 12px 16px; }
             .insta-grid { grid-template-columns: repeat(2, 1fr); }
             .event-card.featured { grid-column: span 1; }
             .event-card.featured .event-title { font-size: 1.8rem; }
@@ -592,6 +711,8 @@
             .footer-logo { font-size: 3.5rem; }
             .footer-bot { flex-direction: column; gap: 10px; }
             .marquee-track { font-size: 18px; }
+            .events-toolbar { flex-direction: column; align-items: stretch; }
+            .filter-tabs { overflow-x: auto; }
         }
     </style>
 </head>
@@ -601,7 +722,7 @@
         <div class="logo">B-<span>STYLE</span></div>
         <nav class="nav-links">
             <a href="#schedule">SCHEDULE</a>
-            <a href="#events">EVENTS</a>
+            <a href="#battles">BATTLES</a>
             <a href="#instagram">FEED</a>
         </nav>
     </header>
@@ -620,11 +741,23 @@
         </div>
     </section>
 
+    <!-- COUNTDOWN -->
+    <div class="countdown-bar" id="countdown-bar" style="display:none;">
+        <div>
+            <div class="countdown-label">NEXT BIG BATTLE</div>
+            <div class="countdown-event" id="countdown-event-name">—</div>
+        </div>
+        <div class="countdown-timer" id="countdown-timer">
+            <div class="countdown-unit"><div class="num" id="cd-d">00</div><div class="lbl">DAYS</div></div>
+            <div class="countdown-unit"><div class="num" id="cd-h">00</div><div class="lbl">HRS</div></div>
+            <div class="countdown-unit"><div class="num" id="cd-m">00</div><div class="lbl">MIN</div></div>
+            <div class="countdown-unit"><div class="num" id="cd-s">00</div><div class="lbl">SEC</div></div>
+        </div>
+    </div>
+
     <!-- MARQUEE -->
     <div class="marquee" aria-hidden="true">
-        <div class="marquee-track" id="marquee-track">
-            <!-- JSで生成 -->
-        </div>
+        <div class="marquee-track" id="marquee-track"></div>
     </div>
 
     <!-- SCHEDULE -->
@@ -633,30 +766,36 @@
             <h2 class="reveal">PRACTICE <span class="accent">SCHEDULE</span></h2>
             <div class="section-num reveal">SECTION / <strong>01</strong></div>
         </div>
-
         <div class="sheet-status reveal">
             <span class="pulse"></span>
             <span id="sheet-status-text">GOOGLE SHEETS と同期中…</span>
         </div>
-
         <div class="schedule-list" id="schedule-container">
-            <!-- ローディング用スケルトン -->
-            <div class="skeleton-row"><div class="skeleton-bar" style="width: 60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width: 80%"></div><div class="skeleton-bar" style="width: 40%"></div></div>
-            <div class="skeleton-row"><div class="skeleton-bar" style="width: 60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width: 80%"></div><div class="skeleton-bar" style="width: 40%"></div></div>
-            <div class="skeleton-row"><div class="skeleton-bar" style="width: 60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width: 80%"></div><div class="skeleton-bar" style="width: 40%"></div></div>
+            <div class="skeleton-row"><div class="skeleton-bar" style="width:60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width:80%"></div><div class="skeleton-bar" style="width:40%"></div></div>
+            <div class="skeleton-row"><div class="skeleton-bar" style="width:60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width:80%"></div><div class="skeleton-bar" style="width:40%"></div></div>
+            <div class="skeleton-row"><div class="skeleton-bar" style="width:60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width:80%"></div><div class="skeleton-bar" style="width:40%"></div></div>
         </div>
     </section>
 
-    <!-- EVENTS -->
-    <section id="events">
+    <!-- BATTLES / EVENTS -->
+    <section id="battles">
         <div class="section-head">
-            <h2 class="reveal">UPCOMING <span class="accent">EVENTS</span></h2>
+            <h2 class="reveal">UPCOMING <span class="accent">BATTLES</span></h2>
             <div class="section-num reveal">SECTION / <strong>02</strong></div>
         </div>
 
-        <div class="events-grid" id="events-container">
-            <!-- JSで生成 -->
+        <div class="events-toolbar reveal">
+            <div class="filter-tabs" id="filter-tabs">
+                <button class="filter-tab active" data-filter="all">ALL</button>
+                <button class="filter-tab" data-filter="WORLD">WORLD</button>
+                <button class="filter-tab" data-filter="JAPAN">JAPAN</button>
+                <button class="filter-tab" data-filter="LOCAL">LOCAL</button>
+                <button class="filter-tab" data-filter="CYPHER">CYPHER</button>
+            </div>
+            <div class="events-meta">LAST UPDATED: <strong id="events-updated">—</strong> / <strong id="events-count">0</strong> EVENTS</div>
         </div>
+
+        <div class="events-grid" id="events-container"></div>
     </section>
 
     <!-- INSTAGRAM -->
@@ -673,7 +812,6 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
     <footer>
         <div class="footer-inner">
             <div>
@@ -684,7 +822,7 @@
                 <h4>NAVIGATION</h4>
                 <ul>
                     <li><a href="#schedule">Schedule</a></li>
-                    <li><a href="#events">Events</a></li>
+                    <li><a href="#battles">Battles</a></li>
                     <li><a href="#instagram">Instagram</a></li>
                 </ul>
             </div>
@@ -708,24 +846,34 @@
         /* ===========================================================
            ▼ Google Sheets 連携の設定
            ===========================================================
-           [STEP1] Googleスプレッドシートを2つのタブ（シート）で作る:
-              - "schedule" タブ: 1行目ヘッダー → date, time, location, memo
-              - "events"   タブ: 1行目ヘッダー → date, title, location, prize, link, featured
+           [STEP1] Googleスプレッドシートを2つのタブで作成:
+
+           "schedule" タブ (1行目ヘッダー):
+              date, time, location, memo
+              例: 2026-05-12, 19:00-21:00, 渋谷区民センター, 基礎
+
+           "events" タブ (1行目ヘッダー):
+              date, title, location, prize, link, tag, featured, status, battlers, desc, updated
+
+              - status: confirmed | tba | entry | closed
+              - tag:    WORLD | JAPAN | LOCAL | CYPHER | (自由)
+              - featured: true / false (大カードで表示)
+              - battlers: カンマ区切り。先頭に ★ を付けるとスター表示
+                         例: ★ISSIN, ★Shigekix, AYANE, HIRO10
+              - updated: YYYY-MM-DD (最終更新日)
 
            [STEP2] スプレッドシートを公開:
-              ファイル → 共有 → ウェブに公開 → 形式「カンマ区切り(.csv)」
+              ファイル → 共有 → ウェブに公開 → CSV形式
 
-           [STEP3] それぞれのシートのCSV URLを下に貼る。
-              （URLが未設定または取得失敗時は、デモデータが表示されます）
+           [STEP3] 取得したURLを下に貼る
            =========================================================== */
         const CONFIG = {
-            scheduleUrl: 'https://docs.google.com/spreadsheets/d/12PlXavSEtoCbF0_lV7OauKn_k1KaEhpPYbdwkoFw7x4/edit?usp=sharing',
+            scheduleUrl: 'YOUR_SCHEDULE_CSV_URL_HERE',
             eventsUrl: 'YOUR_EVENTS_CSV_URL_HERE'
         };
 
         /* ===========================================================
-           デモ用フォールバックデータ
-           （スプシURL未設定 or 取得失敗時に表示）
+           デモ用フォールバックデータ (実在の大会・出場者を反映)
            =========================================================== */
         const FALLBACK_SCHEDULE = [
             { date: '2026-05-02', time: '19:00-21:00', location: '渋谷区民センター 第2スタジオ', memo: '基礎/フットワーク' },
@@ -736,52 +884,90 @@
             { date: '2026-05-19', time: '19:00-21:00', location: '渋谷区民センター 第2スタジオ', memo: 'ミックス' }
         ];
 
-        // 実在の日本のブレイキン大会・イベントを参考にしたデフォルト
+        // 注: 出場者情報は調査時点のもの。実際の出場者は変動する可能性あり
         const FALLBACK_EVENTS = [
+            {
+                date: '2026-08-23',
+                title: 'RED BULL BC ONE CYPHER JAPAN 2026',
+                location: '名古屋',
+                prize: '日本一 / Last Chance Cypher出場権',
+                link: 'https://www.redbull.com/jp-ja/events/red-bull-bc-one-cypher-japan',
+                tag: 'JAPAN',
+                featured: true,
+                status: 'confirmed',
+                battlers: ['★ISSIN', '★Shigekix', '★Riko', '★AYUMI', 'HIRO10', 'AYANE', '+地方予選優勝者'],
+                desc: '日本最高峰のソロバトル。B-Boy 16名 / B-Girl 8名が日本一の座を争う。優勝者はトロントの世界大会へ。',
+                updated: '2026-04-25'
+            },
+            {
+                date: '2026-06-13',
+                title: 'TOKYO CITY CYPHER',
+                location: 'Zouk Tokyo (銀座)',
+                prize: 'Cypher Japan 出場権',
+                link: '',
+                tag: 'CYPHER',
+                featured: false,
+                status: 'entry',
+                battlers: ['公募中'],
+                desc: 'Red Bull BC One 東京予選。勝者は名古屋の日本決勝へ進出。',
+                updated: '2026-04-25'
+            },
             {
                 date: '2026-08-15',
                 title: 'UK B-BOY CHAMPIONSHIPS WORLD FINAL',
                 location: 'Manchester, UK',
-                prize: '世界3大大会',
+                prize: '世界3大大会タイトル',
                 link: '',
                 tag: 'WORLD',
-                featured: true,
-                desc: 'B-BOYシーン最高峰のクルーバトル。日本予選を勝ち抜いた代表が世界に挑む。'
+                featured: false,
+                status: 'confirmed',
+                battlers: ['日本代表 (予選通過チーム)'],
+                desc: '6 vs 6のクルーバトル世界最高峰。日本予選を勝ち抜いたチームが世界の舞台へ。',
+                updated: '2026-04-20'
             },
             {
-                date: '2026-06-20',
-                title: 'CYPHER NIGHT TOKYO',
-                location: '渋谷',
-                prize: '',
+                date: '2026-11-29',
+                title: 'RED BULL BC ONE WORLD FINAL TORONTO',
+                location: 'Toronto, Canada',
+                prize: '世界一',
                 link: '',
-                tag: 'CYPHER',
+                tag: 'WORLD',
                 featured: false,
-                desc: '渋谷でのオールナイトサイファー。サークルメンバー集合。'
+                status: 'tba',
+                battlers: ['ISSIN (前年王者)', 'Riko (前年王者)', '+各国代表'],
+                desc: 'ブレイキン1on1の世界最高峰。前年は東京で日本人男女がW優勝の快挙。',
+                updated: '2026-04-15'
             },
             {
-                date: '2026-07-12',
-                title: 'CREW BATTLE 予選',
-                location: 'TBA',
-                prize: '本戦出場権',
+                date: '2026-06-28',
+                title: '湘南ダンスサミット Vol.17',
+                location: '神奈川',
+                prize: '出場者募集中',
                 link: '',
-                tag: 'BATTLE',
+                tag: 'LOCAL',
                 featured: false,
-                desc: 'チームで出場予定。練習の成果を見せつけよう。'
+                status: 'entry',
+                battlers: ['一般エントリー受付中'],
+                desc: '夏のダンスバトル。湘南エリアのローカルバトル。',
+                updated: '2026-04-10'
             },
             {
                 date: '2027-02-27',
                 title: '全日本ブレイキン選手権',
                 location: '国立代々木競技場 第二体育館',
-                prize: 'JDSF公式',
-                link: '',
-                tag: 'COMPETITION',
+                prize: 'JDSF日本王者',
+                link: 'https://www.jdsfbreaking.com/',
+                tag: 'JAPAN',
                 featured: false,
-                desc: '日本一を決める公式大会。NHKでも全国放送される国内最大規模のブレイキン選手権。'
+                status: 'tba',
+                battlers: ['全国予選通過者', '※TOP8 (各カテゴリー)'],
+                desc: '日本一を決めるJDSF公式大会。NHKで全国放送。オープン男女・ジュニア男女の4部門。',
+                updated: '2026-04-01'
             }
         ];
 
         /* ===========================================================
-           CSV パーサー（クォート内のカンマ・改行に対応）
+           CSV パーサー
            =========================================================== */
         function parseCSV(text) {
             const rows = [];
@@ -806,7 +992,6 @@
             if (field !== '' || row.length) { row.push(field); rows.push(row); }
             return rows;
         }
-
         function csvToObjects(text) {
             const rows = parseCSV(text);
             if (rows.length < 2) return [];
@@ -814,17 +999,17 @@
             return rows.slice(1).map(r => {
                 const obj = {};
                 headers.forEach((h, i) => obj[h] = (r[i] || '').trim());
+                // battlersをカンマ区切り→配列化
+                if (obj.battlers) obj.battlers = obj.battlers.split(/[,、]/).map(s => s.trim()).filter(Boolean);
                 return obj;
             });
         }
-
         async function fetchSheet(url) {
-            if (!url || url.includes('YOUR_') ) return null;
+            if (!url || url.includes('YOUR_')) return null;
             try {
                 const res = await fetch(url);
                 if (!res.ok) throw new Error('fetch fail');
-                const text = await res.text();
-                return csvToObjects(text);
+                return csvToObjects(await res.text());
             } catch (e) {
                 console.warn('[Sheet fetch failed]', e);
                 return null;
@@ -832,52 +1017,50 @@
         }
 
         /* ===========================================================
-           SCHEDULE 描画
+           日付処理
            =========================================================== */
         const WEEKDAYS = ['日','月','火','水','木','金','土'];
         const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
         function parseDate(str) {
-            // "2026-05-02" / "2026/05/02" / "5/2" などに対応
             if (!str) return null;
-            const s = str.trim();
+            const s = String(str).trim();
             const today = new Date();
-            // YYYY-MM-DD or YYYY/MM/DD
             let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
             if (m) return new Date(+m[1], +m[2]-1, +m[3]);
-            // M/D の場合は今年として扱う
             m = s.match(/^(\d{1,2})[-/](\d{1,2})/);
             if (m) {
                 const d = new Date(today.getFullYear(), +m[1]-1, +m[2]);
-                // 過去すぎる場合は来年として扱う
-                if (d < today && (today - d) > 1000*60*60*24*180) {
-                    d.setFullYear(today.getFullYear() + 1);
-                }
+                if (d < today && (today - d) > 1000*60*60*24*180) d.setFullYear(today.getFullYear()+1);
                 return d;
             }
             const d = new Date(s);
             return isNaN(d) ? null : d;
         }
 
+        function daysUntil(d) {
+            const diff = d - new Date();
+            return Math.ceil(diff / (1000*60*60*24));
+        }
+
+        /* ===========================================================
+           SCHEDULE
+           =========================================================== */
         function renderSchedule(items) {
             const container = document.getElementById('schedule-container');
             const statusText = document.getElementById('sheet-status-text');
-
             if (!items || items.length === 0) {
                 container.innerHTML = '<div class="empty-state">予定が登録されていません</div>';
                 return;
             }
-
-            // 日付昇順 + 過去のものは一定数までにする
             const today = new Date(); today.setHours(0,0,0,0);
             const enriched = items.map(item => {
                 const d = parseDate(item.date);
                 return { ...item, _date: d, _isPast: d ? d < today : false };
             }).filter(it => it._date)
               .sort((a,b) => a._date - b._date);
-
+            const past = enriched.filter(it => it._isPast).slice(-2);
             const upcoming = enriched.filter(it => !it._isPast);
-            const past = enriched.filter(it => it._isPast).slice(-2); // 直近の過去2件まで
             const list = [...past, ...upcoming];
 
             container.innerHTML = '';
@@ -886,80 +1069,162 @@
                 const day = String(d.getDate()).padStart(2,'0');
                 const mon = MONTHS[d.getMonth()];
                 const wk = WEEKDAYS[d.getDay()];
-
                 const row = document.createElement('div');
                 row.className = 'schedule-row reveal' + (item._isPast ? ' is-past' : '');
                 row.innerHTML = `
-                    <div class="sch-day">
-                        <span class="month">${mon}</span>
-                        ${day}
-                    </div>
-                    <div class="sch-time">
-                        <span class="weekday">${wk.toUpperCase()}</span>
-                        ${escapeHtml(item.time || '')}
-                    </div>
+                    <div class="sch-day"><span class="month">${mon}</span>${day}</div>
+                    <div class="sch-time"><span class="weekday">${wk.toUpperCase()}</span>${escapeHtml(item.time || '')}</div>
                     <div class="sch-loc">${escapeHtml(item.location || '')}</div>
                     <div class="sch-memo">${item.memo ? `<span class="tag">${escapeHtml(item.memo)}</span>` : ''}</div>
                 `;
                 container.appendChild(row);
             });
-
             statusText.textContent = `LAST SYNC: ${formatNow()} / ${list.length} ENTRIES`;
-            // アニメーション再起動
             observeReveal();
         }
 
         /* ===========================================================
-           EVENTS 描画
+           EVENTS / BATTLES
            =========================================================== */
-        function renderEvents(items) {
+        let allEvents = [];
+        let currentFilter = 'all';
+
+        function getStatusLabel(status) {
+            const map = {
+                'confirmed': 'CONFIRMED',
+                'tba': 'TBA',
+                'entry': 'ENTRY OPEN',
+                'closed': 'CLOSED'
+            };
+            return map[status] || '';
+        }
+
+        function buildICalLink(event) {
+            const d = event._date;
+            const dateStr = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+            const next = new Date(d); next.setDate(next.getDate()+1);
+            const nextStr = next.getFullYear() + String(next.getMonth()+1).padStart(2,'0') + String(next.getDate()).padStart(2,'0');
+            const ics = [
+                'BEGIN:VCALENDAR', 'VERSION:2.0', 'BEGIN:VEVENT',
+                'DTSTART;VALUE=DATE:' + dateStr,
+                'DTEND;VALUE=DATE:' + nextStr,
+                'SUMMARY:' + (event.title || ''),
+                'LOCATION:' + (event.location || ''),
+                'DESCRIPTION:' + (event.desc || ''),
+                'END:VEVENT', 'END:VCALENDAR'
+            ].join('\r\n');
+            return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+        }
+
+        function renderEvents() {
             const container = document.getElementById('events-container');
-            if (!items || items.length === 0) {
-                container.innerHTML = '<div class="empty-state">イベント情報を準備中</div>';
+            const filtered = currentFilter === 'all'
+                ? allEvents
+                : allEvents.filter(e => (e.tag || '').toUpperCase() === currentFilter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">該当するバトルがありません</div>';
                 return;
             }
 
-            const today = new Date(); today.setHours(0,0,0,0);
-            const sorted = items.map(it => {
-                const d = parseDate(it.date);
-                return { ...it, _date: d };
-            }).filter(it => it._date && it._date >= today)
-              .sort((a,b) => a._date - b._date);
-
             container.innerHTML = '';
-            sorted.forEach(item => {
+            filtered.forEach(item => {
                 const d = item._date;
                 const dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${WEEKDAYS[d.getDay()]})`;
+                const days = daysUntil(d);
                 const featured = String(item.featured).toLowerCase() === 'true' || item.featured === true;
+                const status = (item.status || '').toLowerCase();
+                const battlers = Array.isArray(item.battlers) ? item.battlers : (item.battlers ? [item.battlers] : []);
+                const cal = buildICalLink(item);
 
                 const card = document.createElement('div');
                 card.className = 'event-card reveal' + (featured ? ' featured' : '');
                 card.innerHTML = `
+                    ${status ? `<div class="event-status ${status}">${getStatusLabel(status)}</div>` : ''}
                     ${item.tag ? `<div class="event-tag">${escapeHtml(item.tag)}</div>` : ''}
-                    <div class="event-date">${dateStr}</div>
+                    <div class="event-date">
+                        ${dateStr}
+                        ${days >= 0 && days <= 60 ? `<span class="countdown">[ ${days === 0 ? 'TODAY' : 'in ' + days + 'd'} ]</span>` : ''}
+                    </div>
                     <h3 class="event-title">${escapeHtml(item.title || '')}</h3>
                     ${item.desc ? `<p class="event-desc">${escapeHtml(item.desc)}</p>` : ''}
+                    ${battlers.length ? `
+                        <div class="battlers">
+                            <div class="battlers-label">BATTLERS / 出場者</div>
+                            <div class="battlers-list">
+                                ${battlers.map(b => {
+                                    const isStar = b.startsWith('★');
+                                    const name = isStar ? b.slice(1).trim() : b;
+                                    return `<span class="battler${isStar ? ' star' : ''}">${escapeHtml(name)}</span>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
                     <div class="event-meta">
                         ${item.location ? `<div><strong>VENUE</strong>${escapeHtml(item.location)}</div>` : ''}
                         ${item.prize ? `<div><strong>PRIZE</strong>${escapeHtml(item.prize)}</div>` : ''}
                     </div>
-                    ${item.link ? `<a href="${escapeAttr(item.link)}" class="event-link" target="_blank" rel="noopener">DETAIL →</a>` : ''}
+                    <div class="event-actions">
+                        ${item.link ? `<a href="${escapeAttr(item.link)}" class="event-link" target="_blank" rel="noopener">DETAIL →</a>` : ''}
+                        <a href="${cal}" class="event-cal" download="${escapeAttr(item.title || 'event')}.ics">+ CALENDAR</a>
+                    </div>
+                    ${item.updated ? `<div class="event-updated">UPDATED: ${escapeHtml(item.updated)}</div>` : ''}
                 `;
                 container.appendChild(card);
             });
             observeReveal();
         }
 
+        function setupFilters() {
+            document.querySelectorAll('.filter-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderEvents();
+                });
+            });
+        }
+
         /* ===========================================================
-           MARQUEE 描画
+           COUNTDOWN (next biggest event)
+           =========================================================== */
+        let countdownInterval = null;
+        function setupCountdown(events) {
+            // featured かつ未来のものを優先、なければ未来の中で一番直近
+            const future = events.filter(e => e._date > new Date());
+            const target = future.find(e => String(e.featured).toLowerCase() === 'true' || e.featured === true)
+                          || future[0];
+            if (!target) return;
+
+            document.getElementById('countdown-bar').style.display = 'flex';
+            document.getElementById('countdown-event-name').innerHTML = escapeHtml(target.title);
+
+            function update() {
+                const diff = target._date - new Date();
+                if (diff <= 0) { clearInterval(countdownInterval); return; }
+                const d = Math.floor(diff / (1000*60*60*24));
+                const h = Math.floor((diff / (1000*60*60)) % 24);
+                const m = Math.floor((diff / (1000*60)) % 60);
+                const s = Math.floor((diff / 1000) % 60);
+                document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+                document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+                document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+                document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+            }
+            update();
+            countdownInterval = setInterval(update, 1000);
+        }
+
+        /* ===========================================================
+           MARQUEE
            =========================================================== */
         function renderMarquee(events) {
             const track = document.getElementById('marquee-track');
             const items = (events || []).slice(0, 5).map(e => e.title).filter(Boolean);
-            const fallback = ['B-STYLE CREW', 'BREAK THE BEAT', 'TOKYO BREAKING', 'SINCE 2024'];
+            const fallback = ['B-STYLE CREW', 'BREAK THE BEAT', 'TOKYO BREAKING'];
             const list = items.length ? items : fallback;
             const content = list.map(t => `${t} <span class="dot">●</span>`).join(' ');
-            // 2回繰り返してシームレスループ
             track.innerHTML = `<span>${content}</span><span>${content}</span>`;
         }
 
@@ -974,14 +1239,18 @@
             const d = new Date();
             return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
         }
+        function findLatestUpdated(events) {
+            const dates = events.map(e => e.updated).filter(Boolean).sort();
+            return dates.length ? dates[dates.length-1] : '—';
+        }
 
         /* ===========================================================
-           Reveal-on-scroll
+           Reveal
            =========================================================== */
         let revealObserver;
         function observeReveal() {
             if (!revealObserver) {
-                revealObserver = new IntersectionObserver((entries) => {
+                revealObserver = new IntersectionObserver(entries => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('show');
@@ -998,18 +1267,27 @@
            =========================================================== */
         async function init() {
             observeReveal();
-
             const [scheduleData, eventsData] = await Promise.all([
                 fetchSheet(CONFIG.scheduleUrl),
                 fetchSheet(CONFIG.eventsUrl)
             ]);
-
             const schedule = scheduleData || FALLBACK_SCHEDULE;
             const events = eventsData || FALLBACK_EVENTS;
 
+            // 全イベントに _date 付与 + 日付順ソート
+            const today = new Date(); today.setHours(0,0,0,0);
+            allEvents = events.map(it => ({ ...it, _date: parseDate(it.date) }))
+                              .filter(it => it._date && it._date >= today)
+                              .sort((a,b) => a._date - b._date);
+
             renderSchedule(schedule);
-            renderEvents(events);
-            renderMarquee(events);
+            renderEvents();
+            setupFilters();
+            setupCountdown(allEvents);
+            renderMarquee(allEvents);
+
+            document.getElementById('events-count').textContent = allEvents.length;
+            document.getElementById('events-updated').textContent = findLatestUpdated(allEvents);
 
             if (!scheduleData && !eventsData) {
                 document.getElementById('sheet-status-text').textContent = 'デモデータ表示中 / SHEETS未設定';
