@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-STYLE CREW | BREAK THE BEAT</title>
+    <meta name="description" content="B-STYLE CREW - ブレイキンサークル。練習スケジュール・イベント情報・最新情報。">
+
+    <!-- Google Fonts: Antonで尖らせ、Noto Sans JPで読みやすさ、JetBrains Monoでデータ感 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================
+           DESIGN TOKENS
+           ============================ */
+        :root {
+            --bg: #0a0a0a;
+            --bg-elev: #141414;
+            --bg-card: #181818;
+            --line: #262626;
+            --text: #fafafa;
+            --text-dim: #888;
+            --text-mute: #555;
+            --cyan: #00ffcc;
+            --cyan-glow: rgba(0, 255, 204, 0.4);
+            --magenta: #ff2e63;
+            --magenta-glow: rgba(255, 46, 99, 0.4);
+
+            --font-display: 'Anton', 'Noto Sans JP', sans-serif;
+            --font-body: 'Noto Sans JP', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --container: 1200px;
+        }
+
+        /* ============================
+           BASE
+           ============================ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-weight: 400;
+        }
+        /* 全面に薄いグレインノイズを乗せる */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.04;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        }
+        a { text-decoration: none; color: inherit; }
+        h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.02em; line-height: 1.05; }
+        img { max-width: 100%; display: block; }
+        ::selection { background: var(--cyan); color: #000; }
+
+        /* ============================
+           HEADER
+           ============================ */
+        header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 18px 32px;
+            background: rgba(10, 10, 10, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid var(--line);
+        }
+        .logo {
+            font-family: var(--font-display);
+            font-size: 26px;
+            letter-spacing: 4px;
+            color: var(--text);
+        }
+        .logo span { color: var(--cyan); }
+        .nav-links { display: flex; gap: 28px; }
+        .nav-links a {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            position: relative;
+            padding: 4px 0;
+            transition: color .25s;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute; left: 0; bottom: 0;
+            width: 0; height: 2px;
+            background: var(--cyan);
+            transition: width .3s ease;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* ============================
+           HERO
+           ============================ */
+        .hero {
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 100px 8vw 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(0,255,204,0.15), transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255,46,99,0.12), transparent 50%),
+                linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.85)),
+                url('https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=2000&auto=format&fit=crop') center/cover;
+            background-attachment: fixed;
+            z-index: -1;
+        }
+        /* スキャンライン的なオーバーレイ */
+        .hero::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(255,255,255,0.015) 3px,
+                rgba(255,255,255,0.015) 4px
+            );
+            pointer-events: none;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--cyan);
+            margin-bottom: 24px;
+            display: flex; align-items: center; gap: 12px;
+            opacity: 0; animation: slideInFade .8s .2s forwards;
+        }
+        .hero-eyebrow::before {
+            content: ''; width: 32px; height: 2px; background: var(--cyan);
+        }
+
+        .hero h1 {
+            font-size: clamp(4rem, 13vw, 11rem);
+            line-height: 0.88;
+            letter-spacing: -0.01em;
+            margin-bottom: 32px;
+            text-transform: uppercase;
+        }
+        .hero h1 .line {
+            display: block; overflow: hidden;
+        }
+        .hero h1 .word {
+            display: inline-block;
+            transform: translateY(110%);
+            animation: slideUp .9s cubic-bezier(.2,.8,.2,1) forwards;
+        }
+        .hero h1 .word:nth-child(2) { animation-delay: .1s; }
+        .hero h1 .line:nth-child(2) .word { animation-delay: .25s; color: var(--cyan); }
+
+        .hero-meta {
+            display: flex; flex-wrap: wrap; gap: 20px 40px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            border-top: 1px solid var(--line);
+            padding-top: 20px;
+            max-width: 700px;
+            opacity: 0; animation: slideInFade .8s .8s forwards;
+        }
+        .hero-meta strong { color: var(--text); font-weight: 700; letter-spacing: 1px; }
+
+        @keyframes slideUp { to { transform: translateY(0); } }
+        @keyframes slideInFade { to { opacity: 1; } }
+
+        /* ============================
+           MARQUEE (上に流れるイベントテロップ)
+           ============================ */
+        .marquee {
+            background: var(--cyan);
+            color: #000;
+            padding: 14px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            border-top: 1px solid var(--cyan);
+            border-bottom: 1px solid var(--cyan);
+        }
+        .marquee-track {
+            display: inline-flex;
+            gap: 50px;
+            animation: marquee 35s linear infinite;
+            font-family: var(--font-display);
+            font-size: 22px;
+            letter-spacing: 3px;
+        }
+        .marquee-track span { display: inline-flex; align-items: center; gap: 50px; }
+        .marquee-track .dot { color: var(--magenta); }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* ============================
+           SECTIONS
+           ============================ */
+        section {
+            padding: 120px 8vw;
+            max-width: var(--container);
+            margin: 0 auto;
+            position: relative;
+        }
+        .section-head {
+            display: flex; align-items: baseline; justify-content: space-between;
+            margin-bottom: 60px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 24px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .section-head h2 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            text-transform: uppercase;
+        }
+        .section-head h2 .accent { color: var(--cyan); }
+        .section-num {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-mute);
+            letter-spacing: 2px;
+        }
+        .section-num strong { color: var(--cyan); }
+
+        /* ============================
+           SCHEDULE
+           ============================ */
+        .sheet-status {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-mute);
+            margin-bottom: 24px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .sheet-status .pulse {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan-glow);
+            animation: pulse 1.6s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .schedule-list {
+            display: flex; flex-direction: column;
+            border-top: 1px solid var(--line);
+        }
+        .schedule-row {
+            display: grid;
+            grid-template-columns: 90px 1fr 1.5fr 1fr;
+            gap: 24px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--line);
+            align-items: center;
+            transition: background .25s, padding .25s;
+            position: relative;
+        }
+        .schedule-row::before {
+            content: ''; position: absolute;
+            left: -8vw; right: -8vw; top: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(0,255,204,0.04), transparent);
+            opacity: 0; transition: opacity .25s;
+            z-index: -1;
+        }
+        .schedule-row:hover::before { opacity: 1; }
+        .schedule-row:hover { padding-left: 12px; }
+
+        .schedule-row.is-past { opacity: 0.35; }
+
+        .sch-day {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            line-height: 1;
+            color: var(--cyan);
+        }
+        .sch-day .month {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+        .sch-time {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 700;
+        }
+        .sch-time .weekday {
+            display: block;
+            color: var(--text-dim);
+            font-weight: 400;
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .sch-loc { font-size: 15px; font-weight: 500; }
+        .sch-memo {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+            text-align: right;
+        }
+        .sch-memo .tag {
+            display: inline-block;
+            border: 1px solid var(--line);
+            padding: 4px 10px;
+            border-radius: 2px;
+            color: var(--text);
+        }
+
+        .empty-state {
+            font-family: var(--font-mono);
+            text-align: center;
+            color: var(--text-mute);
+            padding: 60px 20px;
+            border: 1px dashed var(--line);
+            font-size: 13px;
+        }
+        .skeleton-row {
+            display: grid;
+            grid-template-columns: 90px 1fr 1.5fr 1fr;
+            gap: 24px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .skeleton-bar {
+            height: 16px;
+            background: linear-gradient(90deg, var(--bg-elev) 0%, var(--bg-card) 50%, var(--bg-elev) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 2px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ============================
+           EVENTS
+           ============================ */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .event-card {
+            background: var(--bg-card);
+            padding: 32px 28px 28px;
+            border: 1px solid var(--line);
+            position: relative;
+            overflow: hidden;
+            transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s;
+            display: flex; flex-direction: column;
+        }
+        .event-card::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: var(--cyan);
+            transition: width .35s;
+        }
+        .event-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--cyan);
+        }
+        .event-card:hover::before { width: 6px; }
+        .event-card.featured {
+            background: linear-gradient(135deg, var(--bg-card), #1f1418);
+            grid-column: span 2;
+        }
+        .event-card.featured::before { background: var(--magenta); }
+        .event-card.featured:hover { border-color: var(--magenta); }
+
+        .event-tag {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .event-card.featured .event-tag { color: var(--magenta); }
+        .event-date {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        .event-title {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            line-height: 1.1;
+        }
+        .event-card.featured .event-title { font-size: 2.4rem; }
+        .event-desc {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        .event-meta {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-mute);
+            display: flex; flex-direction: column; gap: 6px;
+            border-top: 1px solid var(--line);
+            padding-top: 16px;
+        }
+        .event-meta div { display: flex; gap: 8px; align-items: center; }
+        .event-meta strong { color: var(--text); font-weight: 700; min-width: 60px; }
+        .event-link {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--cyan);
+            margin-top: 12px;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .event-link:hover { text-decoration: underline; }
+
+        /* ============================
+           INSTAGRAM
+           ============================ */
+        .insta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .insta-item {
+            aspect-ratio: 1;
+            background: var(--bg-elev);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        .insta-item img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform .6s ease, filter .4s;
+            filter: grayscale(0.4) brightness(0.85);
+        }
+        .insta-item::after {
+            content: 'VIEW';
+            position: absolute;
+            inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .insta-item:hover img { transform: scale(1.08); filter: grayscale(0) brightness(1); }
+        .insta-item:hover::after { opacity: 1; }
+
+        /* ============================
+           FOOTER
+           ============================ */
+        footer {
+            background: var(--bg-elev);
+            padding: 60px 8vw 30px;
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+        }
+        .footer-inner {
+            max-width: var(--container);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        .footer-logo span { color: var(--cyan); }
+        .footer-tag {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+        .footer-col h4 {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 8px; }
+        .footer-col a {
+            font-size: 14px;
+            color: var(--text);
+            transition: color .2s;
+        }
+        .footer-col a:hover { color: var(--cyan); }
+        .footer-bot {
+            max-width: var(--container);
+            margin: 0 auto;
+            border-top: 1px solid var(--line);
+            padding-top: 24px;
+            display: flex; justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-mute);
+            letter-spacing: 1px;
+        }
+
+        /* ============================
+           ANIMATION UTILS
+           ============================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .8s ease, transform .8s ease;
+        }
+        .reveal.show { opacity: 1; transform: translateY(0); }
+
+        /* ============================
+           RESPONSIVE
+           ============================ */
+        @media (max-width: 880px) {
+            header { padding: 14px 20px; }
+            .nav-links { gap: 18px; }
+            .nav-links a { font-size: 11px; letter-spacing: 1px; }
+            .hero { padding: 110px 6vw 60px; }
+            .hero-meta { gap: 12px 24px; font-size: 11px; }
+            section { padding: 80px 6vw; }
+            .section-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .schedule-row {
+                grid-template-columns: 70px 1fr;
+                gap: 12px 16px;
+                padding: 18px 0;
+            }
+            .sch-day { font-size: 2.2rem; }
+            .sch-time, .sch-loc, .sch-memo {
+                grid-column: 2;
+                text-align: left;
+            }
+            .sch-memo .tag { font-size: 11px; }
+            .skeleton-row {
+                grid-template-columns: 70px 1fr;
+                gap: 12px 16px;
+            }
+            .insta-grid { grid-template-columns: repeat(2, 1fr); }
+            .event-card.featured { grid-column: span 1; }
+            .event-card.featured .event-title { font-size: 1.8rem; }
+            .footer-inner { grid-template-columns: 1fr; gap: 30px; }
+            .footer-logo { font-size: 3.5rem; }
+            .footer-bot { flex-direction: column; gap: 10px; }
+            .marquee-track { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">B-<span>STYLE</span></div>
+        <nav class="nav-links">
+            <a href="#schedule">SCHEDULE</a>
+            <a href="#events">EVENTS</a>
+            <a href="#instagram">FEED</a>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-eyebrow">B-STYLE CREW / EST. TOKYO</div>
+        <h1>
+            <span class="line"><span class="word">BREAK</span></span>
+            <span class="line"><span class="word">THE BEAT.</span></span>
+        </h1>
+        <div class="hero-meta">
+            <div><strong>サークル</strong> &nbsp;ブレイキン / ストリートダンス</div>
+            <div><strong>拠点</strong> &nbsp;TOKYO</div>
+            <div><strong>練習</strong> &nbsp;週2-3回</div>
+        </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track" id="marquee-track">
+            <!-- JSで生成 -->
+        </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <section id="schedule">
+        <div class="section-head">
+            <h2 class="reveal">PRACTICE <span class="accent">SCHEDULE</span></h2>
+            <div class="section-num reveal">SECTION / <strong>01</strong></div>
+        </div>
+
+        <div class="sheet-status reveal">
+            <span class="pulse"></span>
+            <span id="sheet-status-text">GOOGLE SHEETS と同期中…</span>
+        </div>
+
+        <div class="schedule-list" id="schedule-container">
+            <!-- ローディング用スケルトン -->
+            <div class="skeleton-row"><div class="skeleton-bar" style="width: 60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width: 80%"></div><div class="skeleton-bar" style="width: 40%"></div></div>
+            <div class="skeleton-row"><div class="skeleton-bar" style="width: 60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width: 80%"></div><div class="skeleton-bar" style="width: 40%"></div></div>
+            <div class="skeleton-row"><div class="skeleton-bar" style="width: 60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width: 80%"></div><div class="skeleton-bar" style="width: 40%"></div></div>
+        </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="events">
+        <div class="section-head">
+            <h2 class="reveal">UPCOMING <span class="accent">EVENTS</span></h2>
+            <div class="section-num reveal">SECTION / <strong>02</strong></div>
+        </div>
+
+        <div class="events-grid" id="events-container">
+            <!-- JSで生成 -->
+        </div>
+    </section>
+
+    <!-- INSTAGRAM -->
+    <section id="instagram">
+        <div class="section-head">
+            <h2 class="reveal">@B<span class="accent">_STYLE</span></h2>
+            <div class="section-num reveal">SECTION / <strong>03</strong></div>
+        </div>
+        <div class="insta-grid">
+            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1502224562085-6dde11ab2ea8?q=80&w=600&auto=format&fit=crop" alt="ig1"></a>
+            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1535525153412-5a42439a210d?q=80&w=600&auto=format&fit=crop" alt="ig2"></a>
+            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1518834107812-67b0b7c58434?q=80&w=600&auto=format&fit=crop" alt="ig3"></a>
+            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1482029255085-35a4a48b7084?q=80&w=600&auto=format&fit=crop" alt="ig4"></a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div>
+                <div class="footer-logo">B-<span>STYLE</span></div>
+                <div class="footer-tag">BREAK THE BEAT / TOKYO</div>
+            </div>
+            <div class="footer-col">
+                <h4>NAVIGATION</h4>
+                <ul>
+                    <li><a href="#schedule">Schedule</a></li>
+                    <li><a href="#events">Events</a></li>
+                    <li><a href="#instagram">Instagram</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>CONNECT</h4>
+                <ul>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">X (Twitter)</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bot">
+            <div>© 2026 B-STYLE CREW. ALL RIGHTS RESERVED.</div>
+            <div>MADE WITH ♥ IN TOKYO</div>
+        </div>
+    </footer>
+
+
+    <script>
+        /* ===========================================================
+           ▼ Google Sheets 連携の設定
+           ===========================================================
+           [STEP1] Googleスプレッドシートを2つのタブ（シート）で作る:
+              - "schedule" タブ: 1行目ヘッダー → date, time, location, memo
+              - "events"   タブ: 1行目ヘッダー → date, title, location, prize, link, featured
+
+           [STEP2] スプレッドシートを公開:
+              ファイル → 共有 → ウェブに公開 → 形式「カンマ区切り(.csv)」
+
+           [STEP3] それぞれのシートのCSV URLを下に貼る。
+              （URLが未設定または取得失敗時は、デモデータが表示されます）
+           =========================================================== */
+        const CONFIG = {
+            scheduleUrl: 'https://docs.google.com/spreadsheets/d/12PlXavSEtoCbF0_lV7OauKn_k1KaEhpPYbdwkoFw7x4/edit?usp=sharing',
+            eventsUrl: 'YOUR_EVENTS_CSV_URL_HERE'
+        };
+
+        /* ===========================================================
+           デモ用フォールバックデータ
+           （スプシURL未設定 or 取得失敗時に表示）
+           =========================================================== */
+        const FALLBACK_SCHEDULE = [
+            { date: '2026-05-02', time: '19:00-21:00', location: '渋谷区民センター 第2スタジオ', memo: '基礎/フットワーク' },
+            { date: '2026-05-05', time: '18:00-22:00', location: '駅前 高架下スペース', memo: 'サイファー' },
+            { date: '2026-05-09', time: '19:00-21:00', location: '渋谷区民センター 第1スタジオ', memo: 'バトル形式' },
+            { date: '2026-05-12', time: '19:00-21:00', location: '△△スポーツセンター', memo: 'パワームーブ' },
+            { date: '2026-05-16', time: '13:00-17:00', location: '代々木公園', memo: '野外練習' },
+            { date: '2026-05-19', time: '19:00-21:00', location: '渋谷区民センター 第2スタジオ', memo: 'ミックス' }
+        ];
+
+        // 実在の日本のブレイキン大会・イベントを参考にしたデフォルト
+        const FALLBACK_EVENTS = [
+            {
+                date: '2026-08-15',
+                title: 'UK B-BOY CHAMPIONSHIPS WORLD FINAL',
+                location: 'Manchester, UK',
+                prize: '世界3大大会',
+                link: '',
+                tag: 'WORLD',
+                featured: true,
+                desc: 'B-BOYシーン最高峰のクルーバトル。日本予選を勝ち抜いた代表が世界に挑む。'
+            },
+            {
+                date: '2026-06-20',
+                title: 'CYPHER NIGHT TOKYO',
+                location: '渋谷',
+                prize: '',
+                link: '',
+                tag: 'CYPHER',
+                featured: false,
+                desc: '渋谷でのオールナイトサイファー。サークルメンバー集合。'
+            },
+            {
+                date: '2026-07-12',
+                title: 'CREW BATTLE 予選',
+                location: 'TBA',
+                prize: '本戦出場権',
+                link: '',
+                tag: 'BATTLE',
+                featured: false,
+                desc: 'チームで出場予定。練習の成果を見せつけよう。'
+            },
+            {
+                date: '2027-02-27',
+                title: '全日本ブレイキン選手権',
+                location: '国立代々木競技場 第二体育館',
+                prize: 'JDSF公式',
+                link: '',
+                tag: 'COMPETITION',
+                featured: false,
+                desc: '日本一を決める公式大会。NHKでも全国放送される国内最大規模のブレイキン選手権。'
+            }
+        ];
+
+        /* ===========================================================
+           CSV パーサー（クォート内のカンマ・改行に対応）
+           =========================================================== */
+        function parseCSV(text) {
+            const rows = [];
+            let row = [], field = '', inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i], n = text[i+1];
+                if (inQuotes) {
+                    if (c === '"' && n === '"') { field += '"'; i++; }
+                    else if (c === '"') { inQuotes = false; }
+                    else { field += c; }
+                } else {
+                    if (c === '"') { inQuotes = true; }
+                    else if (c === ',') { row.push(field); field = ''; }
+                    else if (c === '\n' || c === '\r') {
+                        if (c === '\r' && n === '\n') i++;
+                        row.push(field); field = '';
+                        if (row.some(v => v.trim() !== '')) rows.push(row);
+                        row = [];
+                    } else { field += c; }
+                }
+            }
+            if (field !== '' || row.length) { row.push(field); rows.push(row); }
+            return rows;
+        }
+
+        function csvToObjects(text) {
+            const rows = parseCSV(text);
+            if (rows.length < 2) return [];
+            const headers = rows[0].map(h => h.trim().toLowerCase());
+            return rows.slice(1).map(r => {
+                const obj = {};
+                headers.forEach((h, i) => obj[h] = (r[i] || '').trim());
+                return obj;
+            });
+        }
+
+        async function fetchSheet(url) {
+            if (!url || url.includes('YOUR_') ) return null;
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('fetch fail');
+                const text = await res.text();
+                return csvToObjects(text);
+            } catch (e) {
+                console.warn('[Sheet fetch failed]', e);
+                return null;
+            }
+        }
+
+        /* ===========================================================
+           SCHEDULE 描画
+           =========================================================== */
+        const WEEKDAYS = ['日','月','火','水','木','金','土'];
+        const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+        function parseDate(str) {
+            // "2026-05-02" / "2026/05/02" / "5/2" などに対応
+            if (!str) return null;
+            const s = str.trim();
+            const today = new Date();
+            // YYYY-MM-DD or YYYY/MM/DD
+            let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+            // M/D の場合は今年として扱う
+            m = s.match(/^(\d{1,2})[-/](\d{1,2})/);
+            if (m) {
+                const d = new Date(today.getFullYear(), +m[1]-1, +m[2]);
+                // 過去すぎる場合は来年として扱う
+                if (d < today && (today - d) > 1000*60*60*24*180) {
+                    d.setFullYear(today.getFullYear() + 1);
+                }
+                return d;
+            }
+            const d = new Date(s);
+            return isNaN(d) ? null : d;
+        }
+
+        function renderSchedule(items) {
+            const container = document.getElementById('schedule-container');
+            const statusText = document.getElementById('sheet-status-text');
+
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state">予定が登録されていません</div>';
+                return;
+            }
+
+            // 日付昇順 + 過去のものは一定数までにする
+            const today = new Date(); today.setHours(0,0,0,0);
+            const enriched = items.map(item => {
+                const d = parseDate(item.date);
+                return { ...item, _date: d, _isPast: d ? d < today : false };
+            }).filter(it => it._date)
+              .sort((a,b) => a._date - b._date);
+
+            const upcoming = enriched.filter(it => !it._isPast);
+            const past = enriched.filter(it => it._isPast).slice(-2); // 直近の過去2件まで
+            const list = [...past, ...upcoming];
+
+            container.innerHTML = '';
+            list.forEach(item => {
+                const d = item._date;
+                const day = String(d.getDate()).padStart(2,'0');
+                const mon = MONTHS[d.getMonth()];
+                const wk = WEEKDAYS[d.getDay()];
+
+                const row = document.createElement('div');
+                row.className = 'schedule-row reveal' + (item._isPast ? ' is-past' : '');
+                row.innerHTML = `
+                    <div class="sch-day">
+                        <span class="month">${mon}</span>
+                        ${day}
+                    </div>
+                    <div class="sch-time">
+                        <span class="weekday">${wk.toUpperCase()}</span>
+                        ${escapeHtml(item.time || '')}
+                    </div>
+                    <div class="sch-loc">${escapeHtml(item.location || '')}</div>
+                    <div class="sch-memo">${item.memo ? `<span class="tag">${escapeHtml(item.memo)}</span>` : ''}</div>
+                `;
+                container.appendChild(row);
+            });
+
+            statusText.textContent = `LAST SYNC: ${formatNow()} / ${list.length} ENTRIES`;
+            // アニメーション再起動
+            observeReveal();
+        }
+
+        /* ===========================================================
+           EVENTS 描画
+           =========================================================== */
+        function renderEvents(items) {
+            const container = document.getElementById('events-container');
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state">イベント情報を準備中</div>';
+                return;
+            }
+
+            const today = new Date(); today.setHours(0,0,0,0);
+            const sorted = items.map(it => {
+                const d = parseDate(it.date);
+                return { ...it, _date: d };
+            }).filter(it => it._date && it._date >= today)
+              .sort((a,b) => a._date - b._date);
+
+            container.innerHTML = '';
+            sorted.forEach(item => {
+                const d = item._date;
+                const dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${WEEKDAYS[d.getDay()]})`;
+                const featured = String(item.featured).toLowerCase() === 'true' || item.featured === true;
+
+                const card = document.createElement('div');
+                card.className = 'event-card reveal' + (featured ? ' featured' : '');
+                card.innerHTML = `
+                    ${item.tag ? `<div class="event-tag">${escapeHtml(item.tag)}</div>` : ''}
+                    <div class="event-date">${dateStr}</div>
+                    <h3 class="event-title">${escapeHtml(item.title || '')}</h3>
+                    ${item.desc ? `<p class="event-desc">${escapeHtml(item.desc)}</p>` : ''}
+                    <div class="event-meta">
+                        ${item.location ? `<div><strong>VENUE</strong>${escapeHtml(item.location)}</div>` : ''}
+                        ${item.prize ? `<div><strong>PRIZE</strong>${escapeHtml(item.prize)}</div>` : ''}
+                    </div>
+                    ${item.link ? `<a href="${escapeAttr(item.link)}" class="event-link" target="_blank" rel="noopener">DETAIL →</a>` : ''}
+                `;
+                container.appendChild(card);
+            });
+            observeReveal();
+        }
+
+        /* ===========================================================
+           MARQUEE 描画
+           =========================================================== */
+        function renderMarquee(events) {
+            const track = document.getElementById('marquee-track');
+            const items = (events || []).slice(0, 5).map(e => e.title).filter(Boolean);
+            const fallback = ['B-STYLE CREW', 'BREAK THE BEAT', 'TOKYO BREAKING', 'SINCE 2024'];
+            const list = items.length ? items : fallback;
+            const content = list.map(t => `${t} <span class="dot">●</span>`).join(' ');
+            // 2回繰り返してシームレスループ
+            track.innerHTML = `<span>${content}</span><span>${content}</span>`;
+        }
+
+        /* ===========================================================
+           UTIL
+           =========================================================== */
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function escapeAttr(s) { return escapeHtml(s); }
+        function formatNow() {
+            const d = new Date();
+            return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+
+        /* ===========================================================
+           Reveal-on-scroll
+           =========================================================== */
+        let revealObserver;
+        function observeReveal() {
+            if (!revealObserver) {
+                revealObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('show');
+                            revealObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+            }
+            document.querySelectorAll('.reveal:not(.show)').forEach(el => revealObserver.observe(el));
+        }
+
+        /* ===========================================================
+           INIT
+           =========================================================== */
+        async function init() {
+            observeReveal();
+
+            const [scheduleData, eventsData] = await Promise.all([
+                fetchSheet(CONFIG.scheduleUrl),
+                fetchSheet(CONFIG.eventsUrl)
+            ]);
+
+            const schedule = scheduleData || FALLBACK_SCHEDULE;
+            const events = eventsData || FALLBACK_EVENTS;
+
+            renderSchedule(schedule);
+            renderEvents(events);
+            renderMarquee(events);
+
+            if (!scheduleData && !eventsData) {
+                document.getElementById('sheet-status-text').textContent = 'デモデータ表示中 / SHEETS未設定';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
