@@ -45,13 +45,25 @@
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
         body {
             font-family: var(--font-body);
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
+            max-width: 100vw;
+            position: relative;
+        }
+        /* タッチデバイスで横スワイプを完全禁止 (縦は許可) */
+        html, body {
+            overscroll-behavior-x: none;
+            touch-action: pan-y;
         }
         body::before {
             content: ''; position: fixed; inset: 0;
@@ -1156,7 +1168,7 @@
             .footer-bot { flex-direction: column; gap: 10px; }
             .marquee-track { font-size: 18px; }
             .events-toolbar { flex-direction: column; align-items: stretch; }
-            .filter-tabs { overflow-x: auto; }
+            .filter-tabs { overflow-x: auto; touch-action: pan-x; }
             .map-wrap iframe { height: 280px; }
             .playlist-info::before { font-size: 10rem; }
         }
@@ -1387,7 +1399,7 @@
            ※ enabled: true にして masterKey/binId を設定するとデバイス間共有モード
            =========================================================== */
         const SHARED = {
-            enabled: false, // ← true にすると共有モード ON
+            enabled: true, // ← true にすると共有モード ON
             masterKey: '$2a$10$nDlszIP0fZqaVa3tWryz7e/xC9zkHsYjWSQoq0JkBzWS.lP.GNSE.',
             binId: '69e06fd7856a6821893c5dec',
             pollInterval: 30000  // 30秒ごとに他デバイスの更新を取りに行く
@@ -1731,9 +1743,18 @@
             const remoteStr = JSON.stringify(remote);
             if (localStr !== remoteStr) {
                 console.log('[Sync] remote changes detected, updating UI');
+                // モーダルが開いてる時は更新を遅延
+                if (document.getElementById('modal').classList.contains('show')) {
+                    console.log('[Sync] modal is open, deferring update');
+                    return;
+                }
+                // スクロール位置を保存して再描画後に復元 (見てる場所がズレないように)
+                const scrollY = window.scrollY;
                 userSchedule = remote;
                 saveScheduleToStorage(remote);
                 renderSchedule();
+                // 描画後にスクロール位置を即復元
+                window.scrollTo({ top: scrollY, left: 0, behavior: 'instant' });
             }
         }
 
