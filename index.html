@@ -2089,24 +2089,26 @@
             const container = document.getElementById('events-container');
             const filtered = currentFilter === 'all' ? allEvents : allEvents.filter(e => (e.tag||'').toUpperCase() === currentFilter);
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">該当するバトルがありません</div>';
+                container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">該当するバトルがありません<br><small style="opacity:0.6">F12コンソールで詳細を確認</small></div>';
                 return;
             }
             container.innerHTML = '';
             filtered.forEach(item => {
                 const d = item._date;
-                const dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${WEEKDAYS[d.getDay()]})`;
-                const days = daysUntil(d);
+                const dateStr = d
+                    ? `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${WEEKDAYS[d.getDay()]})`
+                    : escapeHtml(item.date || 'TBA');
+                const days = d ? daysUntil(d) : null;
                 const featured = String(item.featured).toLowerCase() === 'true' || item.featured === true;
                 const status = (item.status || '').toLowerCase();
                 const battlers = Array.isArray(item.battlers) ? item.battlers : (item.battlers ? [item.battlers] : []);
-                const cal = buildICalLink(item);
+                const cal = d ? buildICalLink(item) : null;
                 const card = document.createElement('div');
                 card.className = 'event-card reveal' + (featured ? ' featured' : '');
                 card.innerHTML = `
                     ${status ? `<div class="event-status ${status}">${getStatusLabel(status)}</div>` : ''}
                     ${item.tag ? `<div class="event-tag">${escapeHtml(item.tag)}</div>` : ''}
-                    <div class="event-date">${dateStr}${days >= 0 && days <= 60 ? `<span class="countdown">[ ${days === 0 ? 'TODAY' : 'in ' + days + 'd'} ]</span>` : ''}</div>
+                    <div class="event-date">${dateStr}${days !== null && days >= 0 && days <= 60 ? `<span class="countdown">[ ${days === 0 ? 'TODAY' : 'in ' + days + 'd'} ]</span>` : ''}</div>
                     <h3 class="event-title">${escapeHtml(item.title || '')}</h3>
                     ${item.desc ? `<p class="event-desc">${escapeHtml(item.desc)}</p>` : ''}
                     ${battlers.length ? `
@@ -2126,7 +2128,7 @@
                     </div>
                     <div class="event-actions">
                         ${item.link ? `<a href="${escapeAttr(item.link)}" class="event-link" target="_blank" rel="noopener">DETAIL →</a>` : ''}
-                        <a href="${cal}" class="event-cal" download="${escapeAttr(item.title || 'event')}.ics">+ CALENDAR</a>
+                        ${cal ? `<a href="${cal}" class="event-cal" download="${escapeAttr(item.title || 'event')}.ics">+ CALENDAR</a>` : ''}
                     </div>
                     ${item.updated ? `<div class="event-updated">UPDATED: ${escapeHtml(item.updated)}</div>` : ''}`;
                 container.appendChild(card);
@@ -2374,9 +2376,16 @@
             renderVideos();
 
             const today = new Date(); today.setHours(0,0,0,0);
+            // 30日以上前のバトルは隠すが、それ以外は全部表示
+            const cutoff = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
             allEvents = BATTLES.map(it => ({ ...it, _date: parseDate(it.date) }))
-                              .filter(it => it._date && it._date >= today)
-                              .sort((a,b) => a._date - b._date);
+                              .filter(it => !it._date || it._date >= cutoff)
+                              .sort((a,b) => {
+                                  if (!a._date) return 1;
+                                  if (!b._date) return -1;
+                                  return a._date - b._date;
+                              });
+            console.log(`[Battles] BATTLES配列: ${BATTLES.length}件 → 表示対象: ${allEvents.length}件`);
 
             // schedule: まずローカルから即座に表示
             userSchedule = loadSchedule();
