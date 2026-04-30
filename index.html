@@ -10,9 +10,10 @@
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Break">
+    <meta name="apple-mobile-web-app-title" content="EAGLE">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%230a0a0a'/><rect x='30' y='30' width='120' height='120' fill='none' stroke='%2300ffcc' stroke-width='10'/><text x='90' y='128' font-family='Arial,sans-serif' font-size='110' font-weight='900' fill='%2300ffcc' text-anchor='middle'>B</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a0a0a'/><path d='M5 20 L11 13 L16 17 L21 13 L27 20 L27 24 L5 24 Z' fill='%2300ffcc'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%230a0a0a'/><path d='M30 110 L60 70 L90 95 L120 70 L150 110 L150 130 L30 130 Z' fill='%2300ffcc'/><circle cx='90' cy='60' r='5' fill='%2300ffcc'/><text x='90' y='160' font-family='Arial Black,sans-serif' font-size='22' font-weight='900' fill='%2300ffcc' text-anchor='middle' letter-spacing='3'>EAGLE</text></svg>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,11 +68,7 @@
         header {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 18px 32px;
-            /* iOS Safari/PWA: env()があれば加算、無くても最低40px確保 */
-            padding-top: max(40px, calc(18px + env(safe-area-inset-top)));
-            padding-left: max(20px, calc(16px + env(safe-area-inset-left)));
-            padding-right: max(20px, calc(16px + env(safe-area-inset-right)));
-            background: rgba(10,10,10,0.8);
+            background: rgba(10,10,10,0.85);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             display: flex; justify-content: space-between; align-items: center;
             z-index: 1000;
@@ -93,7 +90,13 @@
             color: var(--cyan);
             font-weight: 700;
         }
-        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links {
+            display: flex; gap: 24px; align-items: center;
+            position: fixed;
+            top: 0; right: 32px;
+            height: 80px;
+            z-index: 1001;
+        }
         .nav-links a {
             font-family: var(--font-mono);
             font-size: 12px; font-weight: 700; letter-spacing: 2px;
@@ -120,43 +123,36 @@
         .install-btn:hover { opacity: 0.85; }
         .install-btn.show { display: inline-flex; }
 
-        /* ============================ HAMBURGER MENU ============================ */
+        /* ============================ HAMBURGER ============================ */
         .hamburger {
             display: none;
-            width: 32px; height: 32px;
+            width: 36px; height: 36px;
             background: transparent;
             border: none;
             cursor: pointer;
             position: relative;
             padding: 0;
-            z-index: 1001;
+            z-index: 1600;
             -webkit-tap-highlight-color: transparent;
         }
         .hamburger span {
             display: block;
             position: absolute;
             left: 50%;
+            width: 22px;
             height: 1.5px;
             background: var(--text);
-            transition: transform .35s cubic-bezier(.6,.05,.28,.91),
-                        top .35s cubic-bezier(.6,.05,.28,.91),
-                        width .35s ease,
-                        background .25s,
-                        opacity .2s;
+            transform: translateX(-50%);
+            transition: transform .35s cubic-bezier(.6,.05,.28,.91), top .35s cubic-bezier(.6,.05,.28,.91), opacity .2s, background .25s;
         }
-        /* 段階状の長さ (上長い → 下短い) */
-        .hamburger span:nth-child(1) { top: 10px; width: 22px; transform: translateX(-50%); }
-        .hamburger span:nth-child(2) { top: 16px; width: 16px; transform: translateX(-50%); }
-        .hamburger span:nth-child(3) { top: 22px; width: 10px; transform: translateX(-50%); }
-        /* ホバーで全部cyan & 揃う */
-        .hamburger:hover span { background: var(--cyan); }
-        .hamburger:hover span:nth-child(2),
-        .hamburger:hover span:nth-child(3) { width: 22px; }
-        /* オープン時は X */
-        .hamburger.is-open span { background: var(--cyan); width: 22px; }
-        .hamburger.is-open span:nth-child(1) { top: 16px; transform: translateX(-50%) rotate(45deg); }
+        .hamburger span:nth-child(1) { top: 12px; }
+        .hamburger span:nth-child(2) { top: 17.5px; }
+        .hamburger span:nth-child(3) { top: 23px; }
+        .hamburger:hover span,
+        .hamburger.is-open span { background: var(--cyan); }
+        .hamburger.is-open span:nth-child(1) { top: 17.5px; transform: translateX(-50%) rotate(45deg); }
         .hamburger.is-open span:nth-child(2) { opacity: 0; }
-        .hamburger.is-open span:nth-child(3) { top: 16px; transform: translateX(-50%) rotate(-45deg); }
+        .hamburger.is-open span:nth-child(3) { top: 17.5px; transform: translateX(-50%) rotate(-45deg); }
 
         /* ============================ HERO ============================ */
         .hero {
@@ -310,9 +306,37 @@
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
         }
+        .schedule-meta {
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        }
         .schedule-note {
             font-family: var(--font-mono); font-size: 11px;
             color: var(--text-mute); letter-spacing: 1px;
+        }
+        .sync-indicator {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            border: 1px solid var(--line);
+            text-transform: uppercase;
+        }
+        .sync-indicator .sync-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--text-mute);
+            transition: background .25s, box-shadow .25s;
+        }
+        .sync-indicator.status-offline .sync-dot { background: var(--text-mute); }
+        .sync-indicator.status-offline { color: var(--text-mute); }
+        .sync-indicator.status-syncing .sync-dot { background: var(--yellow); animation: pulseDot 1.2s infinite; }
+        .sync-indicator.status-syncing { color: var(--yellow); border-color: var(--yellow); }
+        .sync-indicator.status-synced .sync-dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+        .sync-indicator.status-synced { color: var(--cyan); border-color: var(--cyan); }
+        .sync-indicator.status-error .sync-dot { background: var(--red); }
+        .sync-indicator.status-error { color: var(--red); border-color: var(--red); }
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
         }
         .schedule-buttons { display: flex; gap: 8px; }
 
@@ -754,56 +778,362 @@
         .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease; }
         .reveal.show { opacity: 1; transform: translateY(0); }
 
+        /* === 1. SCROLL DOWN インジケーター === */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 32px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            opacity: 0;
+            animation: fadeInDelay 1s 1.5s forwards;
+            pointer-events: none;
+            z-index: 5;
+        }
+        @keyframes fadeInDelay { to { opacity: 1; } }
+        .scroll-line {
+            width: 1px; height: 60px;
+            background: linear-gradient(to bottom, var(--cyan), transparent);
+            position: relative;
+            overflow: hidden;
+        }
+        .scroll-line::after {
+            content: ''; position: absolute;
+            top: -30px; left: 0; right: 0;
+            height: 30px;
+            background: linear-gradient(to bottom, transparent, var(--cyan));
+            animation: scrollPulse 2s infinite ease-in-out;
+        }
+        @keyframes scrollPulse {
+            0%, 100% { transform: translateY(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(60px); opacity: 0; }
+        }
+
+        /* === 2. グリッチテキスト === */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .glitch:hover::before {
+            color: var(--cyan);
+            animation: glitchTop .4s steps(2) infinite;
+            opacity: 0.85;
+            mix-blend-mode: screen;
+        }
+        .glitch:hover::after {
+            color: var(--magenta);
+            animation: glitchBot .4s steps(2) infinite reverse;
+            opacity: 0.85;
+            mix-blend-mode: screen;
+        }
+        @keyframes glitchTop {
+            0%, 100% { clip-path: inset(0 0 70% 0); transform: translate(0); }
+            25% { clip-path: inset(0 0 60% 0); transform: translate(-2px, -1px); }
+            50% { clip-path: inset(20% 0 50% 0); transform: translate(2px, 1px); }
+            75% { clip-path: inset(0 0 80% 0); transform: translate(-1px, 0); }
+        }
+        @keyframes glitchBot {
+            0%, 100% { clip-path: inset(70% 0 0 0); transform: translate(0); }
+            25% { clip-path: inset(60% 0 0 0); transform: translate(2px, 1px); }
+            50% { clip-path: inset(50% 0 20% 0); transform: translate(-2px, -1px); }
+            75% { clip-path: inset(80% 0 0 0); transform: translate(1px, 0); }
+        }
+
+        /* === 3. カウントダウン数字フリップ === */
+        .countdown-unit .num {
+            display: inline-block;
+            transition: transform .15s ease-out;
+        }
+        .countdown-unit.flip .num {
+            animation: numFlip .4s ease-out;
+        }
+        @keyframes numFlip {
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(90deg); color: var(--magenta); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        /* === 4. スケジュール行ホバー → 矢印スライド === */
+        .schedule-row { position: relative; }
+        .schedule-row .sch-arrow {
+            position: absolute;
+            right: -30px; top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            color: var(--cyan);
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 700;
+            transition: right .3s cubic-bezier(.2,.8,.2,1), opacity .3s;
+            pointer-events: none;
+        }
+        .schedule-row:hover .sch-arrow {
+            right: 0;
+            opacity: 1;
+        }
+        .schedule-row:hover .sch-day {
+            text-shadow: 0 0 12px var(--cyan-glow);
+        }
+
+        /* === 5. バトルカードホバーで3D傾き === */
+        .event-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .event-card:hover {
+            transform: translateY(-4px) rotateX(2deg) rotateY(-1deg);
+        }
+        .event-card .event-title {
+            transition: transform .35s ease;
+        }
+        .event-card:hover .event-title {
+            transform: translateZ(20px);
+        }
+
+        /* === 6. プレイボタン脈動 === */
+        @keyframes playPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 24px var(--cyan-glow); }
+            50% { transform: scale(1.08); box-shadow: 0 0 40px var(--cyan-glow); }
+        }
+        .play-btn::after {
+            animation: playPulse 2.4s infinite ease-in-out;
+        }
+
+        /* === 7. マーキーグリッチ (たまに揺れる) === */
+        @keyframes marqueeGlitch {
+            0%, 92%, 100% { transform: translateX(0); }
+            93% { transform: translateX(-2px); filter: hue-rotate(0deg); }
+            94% { transform: translateX(3px); filter: hue-rotate(180deg); }
+            95% { transform: translateX(-1px); filter: hue-rotate(0deg); }
+            96% { transform: translateX(0); }
+        }
+        .marquee:hover .marquee-track {
+            animation: marquee 40s linear infinite, marqueeGlitch 8s infinite;
+        }
+
+        /* === 8. セクション境界スキャンライン === */
+        .section-head { position: relative; }
+        .section-head::before {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--cyan);
+            transition: width 1.2s cubic-bezier(.6,.05,.28,.91);
+        }
+        .section-head.in-view::before { width: 100%; }
+
+        /* === 9. ボタンクリック時の波紋 === */
+        .btn, .filter-tab, .install-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before, .filter-tab::before, .install-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,255,204,0.4);
+            transform: scale(0);
+            border-radius: 50%;
+            opacity: 0;
+            transition: transform .5s, opacity .5s;
+            pointer-events: none;
+        }
+        .btn:active::before, .filter-tab:active::before, .install-btn:active::before {
+            transform: scale(2.5);
+            opacity: 1;
+            transition: 0s;
+        }
+
+        /* === 10. ステータスバッジの強化点滅 === */
+        .event-status.entry {
+            animation: blinkBg 2s infinite, entryShine 3s infinite;
+        }
+        @keyframes entryShine {
+            0%, 100% { background: rgba(255,46,99,0.1); }
+            50% { background: rgba(255,46,99,0.25); }
+        }
+
+        /* === 11. ヒーロータイトル文字が一文字ずつ === */
+        .hero h1 .word .char {
+            display: inline-block;
+            animation: charDrop .9s cubic-bezier(.2,.8,.2,1) backwards;
+        }
+
+        /* === 12. PCのマウス追従カーソルライト === */
+        @media (hover: hover) {
+            body::after {
+                content: '';
+                position: fixed;
+                top: 0; left: 0;
+                width: 600px; height: 600px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(0,255,204,0.06) 0%, transparent 50%);
+                pointer-events: none;
+                z-index: 1;
+                transform: translate(var(--mx, -1000px), var(--my, -1000px)) translate(-50%, -50%);
+                transition: transform 0.15s ease-out;
+                opacity: 0;
+                transition: opacity .4s, transform 0.15s ease-out;
+            }
+            body.cursor-active::after { opacity: 1; }
+        }
+
+        /* === 13. リンク類のホバーで下線が左から === */
+        .footer-col a {
+            position: relative;
+            display: inline-block;
+        }
+        .footer-col a::before {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0;
+            width: 0; height: 1px;
+            background: var(--cyan);
+            transition: width .3s ease;
+        }
+        .footer-col a:hover::before { width: 100%; }
+
+        /* prefers-reduced-motion 対応 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        @keyframes charDrop {
+            from { transform: translateY(110%) rotateX(-90deg); opacity: 0; }
+            to { transform: translateY(0) rotateX(0); opacity: 1; }
+        }
+
         /* ============================ RESPONSIVE ============================ */
         @media (max-width: 1024px) {
             .playlist-wrap { grid-template-columns: 1fr; }
         }
         @media (max-width: 880px) {
-            header { padding: 14px 16px; }
+            header {
+                padding: 16px 20px;
+                padding-top: 80px; /* iPhone Pro Max のステータスバー(~59px)+余白 */
+            }
             .logo .logo-main { font-size: 18px; letter-spacing: 3px; }
             .logo .logo-sub { font-size: 8px; letter-spacing: 1.5px; }
 
-            /* ハンバーガー表示 */
-            .hamburger { display: block; }
+            /* ハンバーガー表示 (上余白80pxに合わせて中央寄せ) */
+            .hamburger { display: block; margin-top: 32px; }
 
-            /* ナビをドロワー化 */
+            /* ===== FULLSCREEN MENU ===== */
             .nav-links {
                 position: fixed;
-                top: 0; right: 0; bottom: 0;
-                width: min(80%, 320px);
-                background: var(--bg-elev);
-                border-left: 1px solid var(--line);
+                top: 0; left: 0; right: 0; bottom: 0;
+                width: 100vw;
+                height: 100vh;
+                height: 100dvh;
+                background: var(--bg);
                 flex-direction: column;
-                justify-content: flex-start;
-                align-items: flex-start;
-                gap: 28px;
-                /* ステータスバー(時計)と被らないように上余白を最低100px確保 */
-                padding: max(100px, calc(80px + env(safe-area-inset-top))) 32px 32px;
-                /* ドラッグでスクロールできるように */
+                justify-content: center;
+                align-items: stretch;
+                gap: 0;
+                padding: 120px 32px 60px;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
-                transform: translateX(100%);
-                transition: transform .35s cubic-bezier(.2,.8,.2,1);
-                z-index: 1000;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity .35s ease, visibility 0s .35s;
+                z-index: 1500;
+                counter-reset: navnum;
             }
-            .nav-links.is-open { transform: translateX(0); box-shadow: -10px 0 40px rgba(0,0,0,0.6); }
-            .nav-links a { font-size: 18px; font-family: var(--font-display); letter-spacing: 3px; padding: 8px 0; }
-            .nav-links a::after { height: 1px; }
-            .install-btn { font-size: 11px; padding: 10px 14px; align-self: flex-start; }
-
-            /* ドロワー背景の半透明オーバーレイ */
-            body.menu-open::after {
+            .nav-links.is-open {
+                opacity: 1;
+                visibility: visible;
+                transition: opacity .35s ease, visibility 0s 0s;
+            }
+            /* メニュー開いてる間はbodyのスクロール禁止 */
+            body.menu-open { overflow: hidden; }
+            /* メニュー背景に薄いグラデーション */
+            .nav-links::before {
                 content: '';
-                position: fixed; inset: 0;
-                background: rgba(0,0,0,0.6);
-                z-index: 999;
-                animation: fadeBg .25s;
+                position: absolute; inset: 0;
+                background:
+                    radial-gradient(ellipse at top right, rgba(0,255,204,0.08), transparent 60%),
+                    radial-gradient(ellipse at bottom left, rgba(255,46,99,0.06), transparent 60%);
+                pointer-events: none;
             }
-            @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+            /* 各リンクのスタイル */
+            .nav-links a {
+                font-family: var(--font-display);
+                font-size: 42px;
+                line-height: 1;
+                letter-spacing: 3px;
+                color: var(--text);
+                padding: 22px 0;
+                border-bottom: 1px solid var(--line);
+                display: flex;
+                align-items: baseline;
+                gap: 14px;
+                position: relative;
+                transform: translateX(-20px);
+                opacity: 0;
+                transition: opacity .4s cubic-bezier(.2,.8,.2,1),
+                            transform .4s cubic-bezier(.2,.8,.2,1),
+                            color .25s;
+                counter-increment: navnum;
+            }
+            .nav-links a::before {
+                content: '0' counter(navnum);
+                font-family: var(--font-mono);
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--cyan);
+                letter-spacing: 2px;
+                opacity: 0.7;
+                /* baseline-aligned to text */
+                line-height: 1;
+            }
+            /* 旧アンダーライン無効化 */
+            .nav-links a::after { display: none; }
+            .nav-links a:hover { color: var(--cyan); }
+            /* オープン時にリンクが順番にfadeIn */
+            .nav-links.is-open a {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            .nav-links.is-open a:nth-child(1) { transition-delay: .1s; }
+            .nav-links.is-open a:nth-child(2) { transition-delay: .15s; }
+            .nav-links.is-open a:nth-child(3) { transition-delay: .2s; }
+            .nav-links.is-open a:nth-child(4) { transition-delay: .25s; }
+            .nav-links.is-open a:nth-child(5) { transition-delay: .3s; }
+
+            .install-btn {
+                font-size: 11px; padding: 12px 16px;
+                align-self: flex-start;
+                margin-top: 24px;
+                opacity: 0;
+                transition: opacity .4s ease .35s;
+            }
+            .nav-links.is-open .install-btn { opacity: 1; }
+
+            /* オーバーレイは不要 (フルスクリーンなので) */
+            body.menu-open::after { display: none; }
 
             .hero {
-                padding: 130px 6vw 60px;
-                padding-top: max(140px, calc(140px + env(safe-area-inset-top)));
+                padding: 150px 6vw 60px;
                 justify-content: flex-start;
                 min-height: 100dvh;
             }
@@ -842,13 +1172,15 @@
         <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
             <span></span><span></span><span></span>
         </button>
-        <nav class="nav-links" id="nav-links">
-            <a href="#schedule">SCHEDULE</a>
-            <a href="#battles">BATTLES</a>
-            <a href="#videos">VIDEOS</a>
-            <button class="install-btn" id="install-btn">+ INSTALL</button>
-        </nav>
     </header>
+
+    <!-- ナビ (header外、stacking contextから独立) -->
+    <nav class="nav-links" id="nav-links">
+        <a href="#schedule">SCHEDULE</a>
+        <a href="#battles">BATTLES</a>
+        <a href="#videos">VIDEOS</a>
+        <button class="install-btn" id="install-btn">+ INSTALL</button>
+    </nav>
 
     <!-- HERO -->
     <section class="hero">
@@ -862,6 +1194,10 @@
             <div><strong>ジャンル</strong> &nbsp;BREAK / ストリートダンス</div>
             <div><strong>拠点</strong> &nbsp;TOKYO</div>
             <div><strong>練習</strong> &nbsp;週3回</div>
+        </div>
+        <div class="scroll-indicator" aria-hidden="true">
+            <span>SCROLL</span>
+            <span class="scroll-line"></span>
         </div>
     </section>
 
@@ -891,7 +1227,13 @@
             <div class="section-num reveal">SECTION / <strong>01</strong></div>
         </div>
         <div class="schedule-controls reveal">
-            <span class="schedule-note" id="schedule-note">タップでマップ表示 / ✎ で編集</span>
+            <div class="schedule-meta">
+                <span class="schedule-note" id="schedule-note">タップでマップ表示 / ✎ で編集</span>
+                <span class="sync-indicator status-offline" id="sync-indicator" title="同期状態">
+                    <span class="sync-dot"></span>
+                    <span class="sync-text">LOCAL ONLY</span>
+                </span>
+            </div>
             <div class="schedule-buttons">
                 <button class="btn btn-ghost" id="btn-reset" title="初期データに戻す">RESET</button>
                 <button class="btn btn-primary" id="btn-add">+ ADD</button>
@@ -1034,6 +1376,24 @@
 
     <script>
         /* ===========================================================
+           ▼▼▼ JSONBin 設定 (デバイス間共有) ▼▼▼
+
+           [STEP1] https://jsonbin.io/ で無料アカウント作成
+           [STEP2] CREATE BIN → 中身を [] と入力して保存
+           [STEP3] 「API Keys」→ Master Key をコピー → 下の masterKey に貼る
+           [STEP4] 作った Bin の URL末尾の長い文字列が Bin ID → 下の binId に貼る
+
+           ※ enabled: false のままだとローカル保存のみ (元の動作)
+           ※ enabled: true にして masterKey/binId を設定するとデバイス間共有モード
+           =========================================================== */
+        const SHARED = {
+            enabled: false, // ← true にすると共有モード ON
+            masterKey: '$2a$10$nDlszIP0fZqaVa3tWryz7e/xC9zkHsYjWSQoq0JkBzWS.lP.GNSE.',
+            binId: '69e06fd7856a6821893c5dec',
+            pollInterval: 30000  // 30秒ごとに他デバイスの更新を取りに行く
+        };
+
+        /* ===========================================================
            ▼ 練習場所 (LOCATIONS)
            各カードに表示する練習場所。
            - mapQuery: Googleマップで検索される文字列。住所でも施設名でもOK
@@ -1111,12 +1471,12 @@
            - memo: 練習内容のメモ (省略可)
            =========================================================== */
         const SCHEDULE = [
-            { date: '2026-05-02', time: '18:00-21:00', location: '上智大学 11号館', memo: '基礎/フットワーク' },
-            { date: '2026-05-05', time: '18:00-21:00', location: 'スタジオワークル大久保', memo: 'バトル練' },
-            { date: '2026-05-09', time: '18:00-21:00', location: '上智大学 11号館', memo: 'ジャンルブレイク' },
-            { date: '2026-05-12', time: '18:00-21:00', location: 'スタジオワークル大久保', memo: 'パワームーブ' },
-            { date: '2026-05-16', time: '18:00-21:00', location: '代々木公園', memo: '野外練習' },
-            { date: '2026-05-19', time: '18:00-21:00', location: '上智大学 11号館', memo: 'ミックス' }
+            { date: '2026-05-02', time: '19:00-21:00', location: '上智大学 11号館', memo: '基礎/フットワーク' },
+            { date: '2026-05-05', time: '18:00-22:00', location: 'スタジオワークル大久保', memo: 'バトル練' },
+            { date: '2026-05-09', time: '19:00-21:00', location: '上智大学 11号館', memo: 'ジャンルブレイク' },
+            { date: '2026-05-12', time: '19:00-21:00', location: 'スタジオワークル大久保', memo: 'パワームーブ' },
+            { date: '2026-05-16', time: '13:00-17:00', location: '代々木公園', memo: '野外練習' },
+            { date: '2026-05-19', time: '19:00-21:00', location: '上智大学 11号館', memo: 'ミックス' }
         ];
 
         /* ===========================================================
@@ -1179,9 +1539,78 @@
         function daysUntil(d) { return Math.ceil((d - new Date()) / (1000*60*60*24)); }
 
         /* ===========================================================
-           SCHEDULE 描画 + EDIT
+           ANIMATION: Mouse-follow cursor light (PC only)
            =========================================================== */
+        function setupCursorLight() {
+            // タッチデバイスでは無効
+            if (window.matchMedia('(hover: none)').matches) return;
+            let raf = null;
+            document.addEventListener('mousemove', (e) => {
+                if (raf) cancelAnimationFrame(raf);
+                raf = requestAnimationFrame(() => {
+                    document.body.style.setProperty('--mx', e.clientX + 'px');
+                    document.body.style.setProperty('--my', e.clientY + 'px');
+                    document.body.classList.add('cursor-active');
+                });
+            });
+            document.addEventListener('mouseleave', () => {
+                document.body.classList.remove('cursor-active');
+            });
+        }
+
+        /* ===========================================================
+           ANIMATION: Section-head underline (in-view trigger)
+           =========================================================== */
+        function setupSectionHeadAnimation() {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            document.querySelectorAll('.section-head').forEach(el => obs.observe(el));
+        }
+
+        /* ===========================================================
+           ANIMATION: Hero title — split into characters with stagger
+           =========================================================== */
+        function splitHeroTitle() {
+            document.querySelectorAll('.hero h1 .word').forEach(word => {
+                const text = word.textContent;
+                word.innerHTML = '';
+                Array.from(text).forEach((ch, i) => {
+                    const span = document.createElement('span');
+                    span.className = 'char';
+                    span.style.animationDelay = (0.4 + i * 0.05) + 's';
+                    span.textContent = ch === ' ' ? '\u00A0' : ch;
+                    word.appendChild(span);
+                });
+                // 元のスライドアップアニメーションを止める
+                word.style.transform = 'translateY(0)';
+                word.style.animation = 'none';
+            });
+        }
+
+        /* ===========================================================
+           ANIMATION: Scroll indicator (auto-hide on scroll)
+           =========================================================== */
+        function setupScrollIndicator() {
+            const ind = document.querySelector('.scroll-indicator');
+            if (!ind) return;
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    ind.style.opacity = '0';
+                } else {
+                    ind.style.opacity = '';
+                }
+            }, { passive: true });
+        }
+
         const SCHEDULE_STORAGE_KEY = 'eagle-schedule-v1';
+        const SCHEDULE_BACKUP_KEY = 'eagle-schedule-backup-v1';
+        const JSONBIN_BASE = 'https://api.jsonbin.io/v3/b/';
 
         // localStorageからユーザー編集版を読み込む。なければデフォルトのSCHEDULEを使う
         function loadSchedule() {
@@ -1198,7 +1627,124 @@
         function saveScheduleToStorage(items) {
             try {
                 localStorage.setItem(SCHEDULE_STORAGE_KEY, JSON.stringify(items));
+                // 念のためバックアップも保存
+                localStorage.setItem(SCHEDULE_BACKUP_KEY, JSON.stringify({
+                    items: items, savedAt: Date.now()
+                }));
             } catch (e) { console.error('[Schedule] save failed', e); }
+        }
+
+        /* ===========================================================
+           JSONBIN 同期 (デバイス間共有)
+           =========================================================== */
+        let syncStatus = 'offline'; // 'offline' | 'syncing' | 'synced' | 'error' | 'shared'
+        let lastSyncedAt = null;
+        let pollTimer = null;
+
+        function isSharedMode() {
+            return SHARED.enabled
+                && SHARED.masterKey
+                && !SHARED.masterKey.includes('YOUR_')
+                && SHARED.binId
+                && !SHARED.binId.includes('YOUR_');
+        }
+
+        function setSyncStatus(status, msg) {
+            syncStatus = status;
+            const el = document.getElementById('sync-indicator');
+            if (!el) return;
+            el.className = 'sync-indicator status-' + status;
+            const labels = {
+                offline: 'LOCAL ONLY',
+                syncing: 'SYNCING…',
+                synced: 'SYNCED',
+                error: 'SYNC ERROR',
+                shared: 'SHARED'
+            };
+            el.querySelector('.sync-text').textContent = msg || labels[status] || status;
+        }
+
+        async function fetchRemoteSchedule() {
+            if (!isSharedMode()) return null;
+            try {
+                setSyncStatus('syncing');
+                const res = await fetch(JSONBIN_BASE + SHARED.binId + '/latest', {
+                    headers: {
+                        'X-Master-Key': SHARED.masterKey,
+                        'X-Bin-Meta': 'false'
+                    }
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                // JSONBin v3 はそのまま中身を返す (X-Bin-Meta:false 指定時)
+                if (Array.isArray(data)) {
+                    setSyncStatus('synced');
+                    lastSyncedAt = Date.now();
+                    return data;
+                }
+                return null;
+            } catch (e) {
+                console.warn('[Sync] fetch failed:', e.message);
+                setSyncStatus('error', 'OFFLINE');
+                return null;
+            }
+        }
+
+        async function pushRemoteSchedule(items) {
+            if (!isSharedMode()) return false;
+            try {
+                setSyncStatus('syncing');
+                const res = await fetch(JSONBIN_BASE + SHARED.binId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': SHARED.masterKey
+                    },
+                    body: JSON.stringify(items)
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                setSyncStatus('synced');
+                lastSyncedAt = Date.now();
+                return true;
+            } catch (e) {
+                console.warn('[Sync] push failed:', e.message);
+                setSyncStatus('error');
+                return false;
+            }
+        }
+
+        // 編集後に呼ぶ: ローカル保存 + リモートpush
+        async function commitSchedule(items) {
+            saveScheduleToStorage(items);
+            if (isSharedMode()) {
+                await pushRemoteSchedule(items);
+            }
+        }
+
+        // 定期的にリモートをチェック (他のデバイスからの更新を反映)
+        async function pollRemote() {
+            if (!isSharedMode()) return;
+            const remote = await fetchRemoteSchedule();
+            if (!remote) return;
+            // ローカルの内容と異なれば置き換え
+            const localStr = JSON.stringify(userSchedule);
+            const remoteStr = JSON.stringify(remote);
+            if (localStr !== remoteStr) {
+                console.log('[Sync] remote changes detected, updating UI');
+                userSchedule = remote;
+                saveScheduleToStorage(remote);
+                renderSchedule();
+            }
+        }
+
+        function startPolling() {
+            if (!isSharedMode()) return;
+            if (pollTimer) clearInterval(pollTimer);
+            pollTimer = setInterval(pollRemote, SHARED.pollInterval);
+            // ページが visible に戻ったタイミングでも即同期
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) pollRemote();
+            });
         }
 
         let userSchedule = []; // 描画中のスケジュール (日付ソート前)
@@ -1238,7 +1784,8 @@
                     <div class="sch-memo">
                         ${item.memo ? `<span class="tag">${escapeHtml(item.memo)}</span>` : ''}
                         <button class="sch-edit-btn" type="button" aria-label="編集" data-edit="1">✎</button>
-                    </div>`;
+                    </div>
+                    <span class="sch-arrow" aria-hidden="true">→</span>`;
                 // 行クリック → マップ同期
                 row.addEventListener('click', (e) => {
                     if (e.target.closest('[data-edit]')) return; // 編集ボタンクリック時は除外
@@ -1264,6 +1811,31 @@
            EDIT MODAL
            =========================================================== */
         let editingIndex = -1; // -1 = 新規追加
+        const DRAFT_KEY = 'eagle-schedule-draft-v1';
+
+        // 下書きを保存 (キー: editingIndex を含めて誤って別の予定の下書きを呼ばないように)
+        function saveDraft() {
+            const data = {
+                editingIndex: editingIndex,
+                date: document.getElementById('f-date').value,
+                time: document.getElementById('f-time').value,
+                loc: document.getElementById('f-loc').value,
+                locCustom: document.getElementById('f-loc-custom').value,
+                memo: document.getElementById('f-memo').value
+            };
+            try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); }
+            catch (e) {}
+        }
+        function loadDraft() {
+            try {
+                const raw = localStorage.getItem(DRAFT_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (e) { return null; }
+        }
+        function clearDraft() {
+            try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+        }
 
         function openModal(idx) {
             editingIndex = (typeof idx === 'number') ? idx : -1;
@@ -1278,16 +1850,14 @@
 
             // 場所セレクトを構築 (LOCATIONSから自動)
             fLoc.innerHTML = '';
-            // 「未選択」オプション
             const optEmpty = new Option('場所を選択...', '');
             fLoc.appendChild(optEmpty);
-            // LOCATIONS のすべての場所をオプションとして追加
             LOCATIONS.forEach(loc => {
                 fLoc.appendChild(new Option(loc.name, loc.name));
             });
-            // 「その他」
             fLoc.appendChild(new Option('━ その他 (自由入力) ━', '__custom__'));
 
+            // まずベース値を埋める
             if (editingIndex >= 0) {
                 title.textContent = 'EDIT PRACTICE';
                 btnDel.classList.remove('hidden');
@@ -1295,7 +1865,6 @@
                 fDate.value = item.date || '';
                 fTime.value = item.time || '';
                 fMemo.value = item.memo || '';
-                // 既存の場所がLOCATIONSに含まれていればselectで選択、無ければ自由入力
                 const known = LOCATIONS.some(l => l.name === item.location);
                 if (known) {
                     fLoc.value = item.location;
@@ -1312,7 +1881,6 @@
             } else {
                 title.textContent = 'ADD PRACTICE';
                 btnDel.classList.add('hidden');
-                // デフォルト値: 今日
                 const today = new Date();
                 fDate.value = today.toISOString().slice(0,10);
                 fTime.value = '';
@@ -1322,17 +1890,43 @@
                 fMemo.value = '';
             }
 
+            // 下書き復元 (同じeditingIndexの下書きがあれば確認して復元)
+            const draft = loadDraft();
+            if (draft && draft.editingIndex === editingIndex) {
+                // 中身が空でない下書きのみ復元提案
+                const hasContent = draft.date || draft.time || draft.loc || draft.locCustom || draft.memo;
+                if (hasContent) {
+                    if (confirm('前回の入力内容が残っています。復元しますか?')) {
+                        fDate.value = draft.date || fDate.value;
+                        fTime.value = draft.time || '';
+                        fMemo.value = draft.memo || '';
+                        if (draft.loc === '__custom__') {
+                            fLoc.value = '__custom__';
+                            fLocCustom.style.display = 'block';
+                            fLocCustom.value = draft.locCustom || '';
+                        } else if (draft.loc) {
+                            fLoc.value = draft.loc;
+                            fLocCustom.style.display = 'none';
+                        }
+                    } else {
+                        clearDraft();
+                    }
+                }
+            }
+
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
             setTimeout(() => fDate.focus(), 100);
         }
 
-        function closeModal() {
+        function closeModal(opts) {
             const modal = document.getElementById('modal');
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            // opts.discardDraft = true なら下書きクリア
+            if (opts && opts.discardDraft) clearDraft();
         }
 
         function setupScheduleEditing() {
@@ -1350,8 +1944,17 @@
                 }
             });
 
+            // 入力中に下書き自動保存 (debounce的に input イベント)
+            ['f-date', 'f-time', 'f-loc', 'f-loc-custom', 'f-memo'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', saveDraft);
+                    el.addEventListener('change', saveDraft);
+                }
+            });
+
             // 保存
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const date = document.getElementById('f-date').value;
                 const time = document.getElementById('f-time').value.trim();
@@ -1368,24 +1971,24 @@
                 } else {
                     userSchedule.push(item);
                 }
-                saveScheduleToStorage(userSchedule);
                 renderSchedule();
-                closeModal();
+                closeModal({ discardDraft: true });
+                await commitSchedule(userSchedule);
             });
 
             // 削除
-            document.getElementById('btn-delete').addEventListener('click', () => {
+            document.getElementById('btn-delete').addEventListener('click', async () => {
                 if (editingIndex < 0) return;
                 if (!confirm('この予定を削除しますか?')) return;
                 userSchedule.splice(editingIndex, 1);
-                saveScheduleToStorage(userSchedule);
                 renderSchedule();
-                closeModal();
+                closeModal({ discardDraft: true });
+                await commitSchedule(userSchedule);
             });
 
-            // キャンセル/閉じる
-            document.getElementById('btn-cancel').addEventListener('click', closeModal);
-            document.getElementById('modal-close').addEventListener('click', closeModal);
+            // キャンセル/閉じる (下書きは保持)
+            document.getElementById('btn-cancel').addEventListener('click', () => closeModal());
+            document.getElementById('modal-close').addEventListener('click', () => closeModal());
             document.getElementById('modal').addEventListener('click', (e) => {
                 if (e.target.id === 'modal') closeModal();
             });
@@ -1399,11 +2002,15 @@
             document.getElementById('btn-add').addEventListener('click', () => openModal(-1));
 
             // RESET
-            document.getElementById('btn-reset').addEventListener('click', () => {
-                if (!confirm('編集内容を破棄して初期データに戻しますか?')) return;
+            document.getElementById('btn-reset').addEventListener('click', async () => {
+                const msg = isSharedMode()
+                    ? '編集内容を破棄して初期データに戻しますか?\n※共有データも初期化されます'
+                    : '編集内容を破棄して初期データに戻しますか?';
+                if (!confirm(msg)) return;
                 localStorage.removeItem(SCHEDULE_STORAGE_KEY);
-                userSchedule = loadSchedule();
+                userSchedule = JSON.parse(JSON.stringify(SCHEDULE));
                 renderSchedule();
+                await commitSchedule(userSchedule);
             });
         }
 
@@ -1596,6 +2203,20 @@
             if (!target) return;
             document.getElementById('countdown-bar').style.display = 'flex';
             document.getElementById('countdown-event-name').innerHTML = escapeHtml(target.title);
+
+            const ids = ['cd-d', 'cd-h', 'cd-m', 'cd-s'];
+            const lastVals = {};
+            function setWithFlip(id, val) {
+                const el = document.getElementById(id);
+                const unit = el.parentElement;
+                if (lastVals[id] !== val) {
+                    lastVals[id] = val;
+                    el.textContent = val;
+                    unit.classList.remove('flip');
+                    void unit.offsetWidth; // reflow
+                    unit.classList.add('flip');
+                }
+            }
             function update() {
                 const diff = target._date - new Date();
                 if (diff <= 0) { clearInterval(countdownInterval); return; }
@@ -1603,10 +2224,10 @@
                 const h = Math.floor((diff / (1000*60*60)) % 24);
                 const m = Math.floor((diff / (1000*60)) % 60);
                 const s = Math.floor((diff / 1000) % 60);
-                document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
-                document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
-                document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
-                document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+                setWithFlip('cd-d', String(d).padStart(2,'0'));
+                setWithFlip('cd-h', String(h).padStart(2,'0'));
+                setWithFlip('cd-m', String(m).padStart(2,'0'));
+                setWithFlip('cd-s', String(s).padStart(2,'0'));
             }
             update();
             countdownInterval = setInterval(update, 1000);
@@ -1675,12 +2296,12 @@
            =========================================================== */
         function setupPWA() {
             // Manifest as data URI
-            const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0a0a0a"/><rect x="80" y="80" width="352" height="352" fill="none" stroke="#00ffcc" stroke-width="32"/><text x="256" y="360" font-family="Arial,sans-serif" font-size="320" font-weight="900" fill="#00ffcc" text-anchor="middle">B</text></svg>`;
+            const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0a0a0a"/><path d="M85 310 L170 200 L256 270 L342 200 L427 310 L427 370 L85 370 Z" fill="#00ffcc"/><circle cx="256" cy="170" r="14" fill="#00ffcc"/><text x="256" y="455" font-family="Arial Black,sans-serif" font-size="62" font-weight="900" fill="#00ffcc" text-anchor="middle" letter-spacing="8">EAGLE</text></svg>`;
             const iconUri = 'data:image/svg+xml;base64,' + btoa(iconSvg);
             const manifest = {
                 name: "dance crew EAGLE",
                 short_name: "EAGLE",
-                description: "Break",
+                description: "Dance crew at Sophia University - BREAK",
                 start_url: ".",
                 display: "standalone",
                 orientation: "portrait-primary",
@@ -1721,10 +2342,14 @@
         /* ===========================================================
            INIT
            =========================================================== */
-        function init() {
+        async function init() {
             observeReveal();
             setupPWA();
             setupHamburger();
+            setupCursorLight();
+            setupSectionHeadAnimation();
+            setupScrollIndicator();
+            splitHeroTitle();
             renderVideos();
 
             const today = new Date(); today.setHours(0,0,0,0);
@@ -1732,10 +2357,27 @@
                               .filter(it => it._date && it._date >= today)
                               .sort((a,b) => a._date - b._date);
 
-            // schedule: localStorageから読み込み (なければデフォルト)
+            // schedule: まずローカルから即座に表示
             userSchedule = loadSchedule();
             renderSchedule();
             setupScheduleEditing();
+
+            // 共有モード: リモートと同期
+            if (isSharedMode()) {
+                setSyncStatus('syncing');
+                const remote = await fetchRemoteSchedule();
+                if (remote && remote.length > 0) {
+                    userSchedule = remote;
+                    saveScheduleToStorage(remote);
+                    renderSchedule();
+                } else if (remote && remote.length === 0 && userSchedule.length > 0) {
+                    // リモートが空でローカルにデフォルトデータがある → 初回プッシュ
+                    await pushRemoteSchedule(userSchedule);
+                }
+                startPolling();
+            } else {
+                setSyncStatus('offline');
+            }
 
             renderEvents();
             setupFilters();
