@@ -116,6 +116,35 @@
         .install-btn:hover { opacity: 0.85; }
         .install-btn.show { display: inline-flex; }
 
+        /* ============================ HAMBURGER MENU ============================ */
+        .hamburger {
+            display: none;
+            width: 40px; height: 40px;
+            background: transparent;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            position: relative;
+            padding: 0;
+            z-index: 1001;
+            transition: border-color .25s;
+        }
+        .hamburger:hover { border-color: var(--cyan); }
+        .hamburger span {
+            display: block;
+            position: absolute;
+            left: 50%; transform: translateX(-50%);
+            width: 18px; height: 2px;
+            background: var(--text);
+            transition: transform .3s, top .3s, opacity .2s;
+        }
+        .hamburger span:nth-child(1) { top: 13px; }
+        .hamburger span:nth-child(2) { top: 19px; }
+        .hamburger span:nth-child(3) { top: 25px; }
+        .hamburger.is-open span { background: var(--cyan); }
+        .hamburger.is-open span:nth-child(1) { top: 19px; transform: translateX(-50%) rotate(45deg); }
+        .hamburger.is-open span:nth-child(2) { opacity: 0; }
+        .hamburger.is-open span:nth-child(3) { top: 19px; transform: translateX(-50%) rotate(-45deg); }
+
         /* ============================ HERO ============================ */
         .hero {
             min-height: 100vh;
@@ -536,83 +565,6 @@
         }
         .video-info p { color: var(--text-dim); font-size: 13px; }
 
-        /* ============================ ARCHIVE ============================ */
-        .archive-filter {
-            display: flex; gap: 12px; flex-wrap: wrap;
-            margin-bottom: 28px;
-        }
-        .archive-year {
-            font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 2px;
-            color: var(--text-dim);
-            padding: 6px 12px; border: 1px solid var(--line);
-            background: transparent; cursor: pointer;
-            transition: all .2s;
-        }
-        .archive-year:hover { color: var(--text); }
-        .archive-year.active { color: var(--cyan); border-color: var(--cyan); }
-
-        .archive-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-        .archive-item {
-            position: relative; aspect-ratio: 4/5;
-            overflow: hidden; cursor: pointer;
-            background: var(--bg-elev);
-        }
-        .archive-item:nth-child(7n+1) { grid-column: span 2; aspect-ratio: 8/5; }
-        .archive-item img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform .6s, filter .3s;
-            filter: grayscale(0.3) brightness(0.85);
-        }
-        .archive-item:hover img { transform: scale(1.06); filter: grayscale(0) brightness(1); }
-        .archive-caption {
-            position: absolute; left: 0; right: 0; bottom: 0;
-            padding: 16px;
-            background: linear-gradient(to top, rgba(0,0,0,0.92), transparent);
-            transform: translateY(60%); transition: transform .35s ease;
-        }
-        .archive-item:hover .archive-caption { transform: translateY(0); }
-        .archive-caption .arch-date {
-            font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 2px;
-            color: var(--cyan); margin-bottom: 4px;
-        }
-        .archive-caption .arch-title {
-            font-family: var(--font-display); font-size: 1.1rem;
-            color: var(--text); text-transform: uppercase;
-            line-height: 1.1;
-        }
-
-        /* Lightbox */
-        .lightbox {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.95);
-            display: none; align-items: center; justify-content: center;
-            z-index: 10000; padding: 40px;
-            animation: fadeIn .25s ease;
-        }
-        .lightbox.show { display: flex; }
-        .lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; }
-        .lightbox-close {
-            position: absolute; top: 20px; right: 28px;
-            background: transparent; border: 1px solid var(--cyan);
-            color: var(--cyan);
-            font-family: var(--font-mono); font-size: 13px; font-weight: 700;
-            width: 44px; height: 44px;
-            cursor: pointer; transition: all .2s;
-        }
-        .lightbox-close:hover { background: var(--cyan); color: #000; }
-        .lightbox-caption {
-            position: absolute; bottom: 30px; left: 0; right: 0;
-            text-align: center;
-            font-family: var(--font-mono); font-size: 12px;
-            color: var(--text-dim); letter-spacing: 1px;
-        }
-        .lightbox-caption strong { color: var(--cyan); margin-right: 12px; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         /* ============================ PLAYLIST (Spotify) ============================ */
         .playlist-wrap {
             display: grid;
@@ -719,9 +671,43 @@
         }
         @media (max-width: 880px) {
             header { padding: 14px 16px; }
-            .nav-links { gap: 14px; }
-            .nav-links a { font-size: 10px; letter-spacing: 1px; }
-            .install-btn { font-size: 10px; padding: 6px 10px; }
+            .logo .logo-main { font-size: 18px; letter-spacing: 3px; }
+            .logo .logo-sub { font-size: 8px; letter-spacing: 1.5px; }
+
+            /* ハンバーガー表示 */
+            .hamburger { display: block; }
+
+            /* ナビをドロワー化 */
+            .nav-links {
+                position: fixed;
+                top: 0; right: 0; bottom: 0;
+                width: min(80%, 320px);
+                background: var(--bg-elev);
+                border-left: 1px solid var(--line);
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 28px;
+                padding: 80px 32px 32px;
+                transform: translateX(100%);
+                transition: transform .35s cubic-bezier(.2,.8,.2,1);
+                z-index: 1000;
+            }
+            .nav-links.is-open { transform: translateX(0); box-shadow: -10px 0 40px rgba(0,0,0,0.6); }
+            .nav-links a { font-size: 18px; font-family: var(--font-display); letter-spacing: 3px; padding: 8px 0; }
+            .nav-links a::after { height: 1px; }
+            .install-btn { font-size: 11px; padding: 10px 14px; align-self: flex-start; }
+
+            /* ドロワー背景の半透明オーバーレイ */
+            body.menu-open::after {
+                content: '';
+                position: fixed; inset: 0;
+                background: rgba(0,0,0,0.6);
+                z-index: 999;
+                animation: fadeBg .25s;
+            }
+            @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+
             .hero { padding: 110px 6vw 60px; }
             .hero-meta { gap: 12px 24px; font-size: 11px; }
             section { padding: 80px 6vw; }
@@ -735,8 +721,6 @@
             .sch-memo .tag { font-size: 11px; }
             .skeleton-row { grid-template-columns: 70px 1fr; gap: 12px 16px; }
             .insta-grid { grid-template-columns: repeat(2, 1fr); }
-            .archive-grid { grid-template-columns: repeat(2, 1fr); }
-            .archive-item:nth-child(7n+1) { grid-column: span 2; aspect-ratio: 16/9; }
             .event-card.featured { grid-column: span 1; }
             .event-card.featured .event-title { font-size: 1.8rem; }
             .footer-inner { grid-template-columns: 1fr; gap: 30px; }
@@ -757,11 +741,13 @@
             <div class="logo-main">EAGLE</div>
             <div class="logo-sub">DANCE CREW / SOPHIA</div>
         </div>
-        <nav class="nav-links">
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="nav-links" id="nav-links">
             <a href="#schedule">SCHEDULE</a>
             <a href="#battles">BATTLES</a>
             <a href="#videos">VIDEOS</a>
-            <a href="#archive">ARCHIVE</a>
             <a href="#feed">FEED</a>
             <button class="install-btn" id="install-btn">+ INSTALL</button>
         </nav>
@@ -863,27 +849,17 @@
         <div class="videos-grid" id="videos-grid"></div>
     </section>
 
-    <!-- ARCHIVE -->
-    <section id="archive">
-        <div class="section-head">
-            <h2 class="reveal">ARCHIVE <span class="accent">/24-25</span></h2>
-            <div class="section-num reveal">SECTION / <strong>05</strong></div>
-        </div>
-        <div class="archive-filter reveal" id="archive-filter"></div>
-        <div class="archive-grid" id="archive-grid"></div>
-    </section>
-
     <!-- PLAYLIST -->
     <section id="playlist">
         <div class="section-head">
             <h2 class="reveal">CREW <span class="accent">PLAYLIST</span></h2>
-            <div class="section-num reveal">SECTION / <strong>06</strong></div>
+            <div class="section-num reveal">SECTION / <strong>05</strong></div>
         </div>
         <div class="playlist-wrap">
             <div class="playlist-info reveal">
                 <div>
-                    <div class="playlist-eyebrow">SOUND OF B-STYLE</div>
-                    <h3 class="playlist-title">SHIBUYA<br><span>BREAKS</span></h3>
+                    <div class="playlist-eyebrow">SOUND OF EAGLE</div>
+                    <h3 class="playlist-title">EAGLE<br><span>BREAKS</span></h3>
                     <p class="playlist-desc">練習中によくかける曲。Funk / Old School Hip Hop / Breaks。Spotifyで聴ける。</p>
                 </div>
                 <div class="playlist-stats">
@@ -907,8 +883,8 @@
     <!-- INSTAGRAM -->
     <section id="feed">
         <div class="section-head">
-            <h2 class="reveal">@B<span class="accent">_STYLE</span></h2>
-            <div class="section-num reveal">SECTION / <strong>07</strong></div>
+            <h2 class="reveal">@<span class="accent">EAGLE</span></h2>
+            <div class="section-num reveal">SECTION / <strong>06</strong></div>
         </div>
         <div class="insta-grid">
             <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1502224562085-6dde11ab2ea8?q=80&w=600&auto=format&fit=crop" alt="ig1"></a>
@@ -931,7 +907,6 @@
                     <li><a href="#locations">Locations</a></li>
                     <li><a href="#battles">Battles</a></li>
                     <li><a href="#videos">Videos</a></li>
-                    <li><a href="#archive">Archive</a></li>
                 </ul>
             </div>
 
@@ -942,21 +917,23 @@
         </div>
     </footer>
 
-    <!-- LIGHTBOX -->
-    <div class="lightbox" id="lightbox">
-        <button class="lightbox-close" id="lightbox-close" aria-label="Close">×</button>
-        <img id="lightbox-img" src="" alt="">
-        <div class="lightbox-caption" id="lightbox-caption"></div>
-    </div>
-
 
     <script>
         /* ===========================================================
-           ▼ Google Sheets 連携 (schedule + events タブ)
+           ▼ Google Sheets 連携
+           ▼▼▼ 設定方法 ▼▼▼
+           1. Googleスプレッドシートを作る (1ファイル / 2タブ構成)
+              - タブ1の名前を "schedule" にする (列: date, time, location, memo)
+              - タブ2の名前を "events"   にする (列: date, title, location, prize, link, tag, featured, status, battlers, desc, updated)
+           2. スプシ右上の「共有」→「リンクを知っている全員」を「閲覧者」に変更
+           3. ブラウザのアドレスバーの URL をそのまま sheetUrl に貼り付ける (編集URLでOK)
            =========================================================== */
         const CONFIG = {
-            scheduleUrl: 'https://docs.google.com/spreadsheets/d/12PlXavSEtoCbF0_lV7OauKn_k1KaEhpPYbdwkoFw7x4/edit?usp=sharing',
-            eventsUrl: 'https://docs.google.com/spreadsheets/d/12PlXavSEtoCbF0_lV7OauKn_k1KaEhpPYbdwkoFw7x4/edit?usp=sharing'
+            // スプシのURL (編集URLそのままでOK)
+            sheetUrl: 'https://docs.google.com/spreadsheets/d/12PlXavSEtoCbF0_lV7OauKn_k1KaEhpPYbdwkoFw7x4/edit?gid=1438571265#gid=1438571265',
+            // タブ(シート)名
+            scheduleTab: 'schedule',
+            eventsTab: 'events'
         };
 
         /* ===========================================================
@@ -1028,20 +1005,6 @@
             },
         ];
 
-        /* ===========================================================
-            ▼ アーカイブ (ARCHIVE) - 過去イベントの写真
-           =========================================================== */
-        const ARCHIVE = [
-            { year: '2025', date: '2025.12', title: 'YEAR END BATTLE', img: 'https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=900&auto=format&fit=crop' },
-            { year: '2025', date: '2025.10', title: 'AUTUMN CYPHER', img: 'https://images.unsplash.com/photo-1535525153412-5a42439a210d?q=80&w=900&auto=format&fit=crop' },
-            { year: '2025', date: '2025.08', title: 'SUMMER JAM', img: 'https://images.unsplash.com/photo-1518834107812-67b0b7c58434?q=80&w=900&auto=format&fit=crop' },
-            { year: '2025', date: '2025.06', title: 'CREW BATTLE', img: 'https://images.unsplash.com/photo-1482029255085-35a4a48b7084?q=80&w=900&auto=format&fit=crop' },
-            { year: '2025', date: '2025.04', title: 'NEW MEMBER PARTY', img: 'https://images.unsplash.com/photo-1504609813442-a8924e83f76e?q=80&w=900&auto=format&fit=crop' },
-            { year: '2024', date: '2024.12', title: 'CIRCLE LAUNCH', img: 'https://images.unsplash.com/photo-1571266028243-d220bc8a1a92?q=80&w=900&auto=format&fit=crop' },
-            { year: '2024', date: '2024.10', title: 'STREET SESSION', img: 'https://images.unsplash.com/photo-1551845728-6820a30c64f4?q=80&w=900&auto=format&fit=crop' },
-            { year: '2024', date: '2024.08', title: 'FIRST PUBLIC SHOW', img: 'https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?q=80&w=900&auto=format&fit=crop' }
-        ];
-
         const FALLBACK_SCHEDULE = [
             { date: '2026-05-02', time: '19:00-21:00', location: '渋谷区民センター 第2スタジオ', memo: '基礎/フットワーク' },
             { date: '2026-05-05', time: '18:00-22:00', location: '駅前 高架下スペース', memo: 'サイファー' },
@@ -1104,13 +1067,48 @@
                 return obj;
             });
         }
-        async function fetchSheet(url) {
-            if (!url || url.includes('YOUR_')) return null;
+        // スプシのURL/IDから シートIDを抽出
+        function extractSheetId(urlOrId) {
+            if (!urlOrId) return '';
+            const s = String(urlOrId).trim();
+            // /d/ID/ パターン
+            const m = s.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (m) return m[1];
+            // ID単体
+            if (/^[a-zA-Z0-9_-]{20,}$/.test(s)) return s;
+            return '';
+        }
+
+        // gviz エンドポイントから CSV を取得 (タブ名指定可)
+        // 編集URLしか持っていなくても動く。シートを「リンクを知っている全員が閲覧可能」に共有しておくこと。
+        async function fetchSheet(sheetUrl, tabName) {
+            if (!sheetUrl || sheetUrl.includes('YOUR_')) return null;
+            const id = extractSheetId(sheetUrl);
+            if (!id) {
+                console.warn('[Sheet] スプレッドシートのURLが認識できません:', sheetUrl);
+                return null;
+            }
+            // gviz エンドポイント (CSV出力)
+            const url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
             try {
                 const res = await fetch(url);
-                if (!res.ok) throw new Error('fetch fail');
-                return csvToObjects(await res.text());
-            } catch (e) { console.warn('[Sheet fetch failed]', e); return null; }
+                if (!res.ok) {
+                    console.warn(`[Sheet "${tabName}"] HTTP ${res.status} - シートが「リンクを知っている全員が閲覧可能」に共有されているか確認してください`);
+                    return null;
+                }
+                const text = await res.text();
+                // gvizはエラー時にHTMLを返すのでチェック
+                if (text.trim().startsWith('<')) {
+                    console.warn(`[Sheet "${tabName}"] HTMLが返されました - タブ名 "${tabName}" が存在しないか、シートが非公開の可能性があります`);
+                    return null;
+                }
+                const data = csvToObjects(text);
+                console.log(`[Sheet "${tabName}"] ${data.length} 件取得`);
+                return data;
+            } catch (e) {
+                console.warn(`[Sheet "${tabName}"] fetch失敗:`, e.message);
+                return null;
+            }
         }
 
         /* ===========================================================
@@ -1352,65 +1350,6 @@
             observeReveal();
         }
 
-        /* ===========================================================
-           ARCHIVE 描画
-           =========================================================== */
-        let currentYear = 'all';
-        function renderArchiveFilter() {
-            const filter = document.getElementById('archive-filter');
-            const years = ['all', ...Array.from(new Set(ARCHIVE.map(a => a.year))).sort().reverse()];
-            filter.innerHTML = '';
-            years.forEach(y => {
-                const btn = document.createElement('button');
-                btn.className = 'archive-year' + (y === currentYear ? ' active' : '');
-                btn.textContent = y === 'all' ? 'ALL' : y;
-                btn.addEventListener('click', () => {
-                    currentYear = y;
-                    renderArchiveFilter();
-                    renderArchive();
-                });
-                filter.appendChild(btn);
-            });
-        }
-        function renderArchive() {
-            const grid = document.getElementById('archive-grid');
-            const items = currentYear === 'all' ? ARCHIVE : ARCHIVE.filter(a => a.year === currentYear);
-            grid.innerHTML = '';
-            items.forEach(a => {
-                const item = document.createElement('div');
-                item.className = 'archive-item reveal';
-                item.innerHTML = `
-                    <img src="${escapeAttr(a.img)}" alt="${escapeAttr(a.title)}" loading="lazy">
-                    <div class="archive-caption">
-                        <div class="arch-date">${escapeHtml(a.date)}</div>
-                        <div class="arch-title">${escapeHtml(a.title)}</div>
-                    </div>`;
-                item.addEventListener('click', () => openLightbox(a));
-                grid.appendChild(item);
-            });
-            observeReveal();
-        }
-
-        /* ===========================================================
-           LIGHTBOX
-           =========================================================== */
-        function openLightbox(item) {
-            const lb = document.getElementById('lightbox');
-            document.getElementById('lightbox-img').src = item.img;
-            document.getElementById('lightbox-img').alt = item.title;
-            document.getElementById('lightbox-caption').innerHTML = `<strong>${escapeHtml(item.date)}</strong>${escapeHtml(item.title)}`;
-            lb.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('show');
-            document.body.style.overflow = '';
-        }
-        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-        document.getElementById('lightbox').addEventListener('click', (e) => {
-            if (e.target.id === 'lightbox') closeLightbox();
-        });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
 
         /* ===========================================================
            COUNTDOWN
@@ -1468,6 +1407,35 @@
         }
 
         /* ===========================================================
+           HAMBURGER MENU
+           =========================================================== */
+        function setupHamburger() {
+            const btn = document.getElementById('hamburger');
+            const nav = document.getElementById('nav-links');
+            function toggle(force) {
+                const open = typeof force === 'boolean' ? force : !nav.classList.contains('is-open');
+                nav.classList.toggle('is-open', open);
+                btn.classList.toggle('is-open', open);
+                btn.setAttribute('aria-expanded', open);
+                document.body.classList.toggle('menu-open', open);
+            }
+            btn.addEventListener('click', () => toggle());
+            // ナビ内のリンクをタップしたら閉じる
+            nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggle(false)));
+            // 外側タップで閉じる
+            document.addEventListener('click', (e) => {
+                if (!nav.classList.contains('is-open')) return;
+                if (e.target === btn || btn.contains(e.target)) return;
+                if (nav.contains(e.target)) return;
+                toggle(false);
+            });
+            // ESCで閉じる
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && nav.classList.contains('is-open')) toggle(false);
+            });
+        }
+
+        /* ===========================================================
            PWA
            =========================================================== */
         function setupPWA() {
@@ -1521,14 +1489,13 @@
         async function init() {
             observeReveal();
             setupPWA();
+            setupHamburger();
             renderLocations();
             renderVideos();
-            renderArchiveFilter();
-            renderArchive();
 
             const [scheduleData, eventsData] = await Promise.all([
-                fetchSheet(CONFIG.scheduleUrl),
-                fetchSheet(CONFIG.eventsUrl)
+                fetchSheet(CONFIG.sheetUrl, CONFIG.scheduleTab),
+                fetchSheet(CONFIG.sheetUrl, CONFIG.eventsTab)
             ]);
             const schedule = scheduleData || FALLBACK_SCHEDULE;
             const events = eventsData || FALLBACK_EVENTS;
