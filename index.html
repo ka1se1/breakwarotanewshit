@@ -148,6 +148,7 @@
         /* ============================ HERO ============================ */
         .hero {
             min-height: 100vh;
+            min-height: 100dvh; /* iOSのアドレスバー考慮 */
             display: flex; flex-direction: column;
             justify-content: center; align-items: flex-start;
             padding: 100px 8vw 0;
@@ -259,20 +260,6 @@
         .section-num strong { color: var(--cyan); }
 
         /* ============================ SCHEDULE ============================ */
-        .sheet-status {
-            font-family: var(--font-mono); font-size: 11px;
-            color: var(--text-mute); margin-bottom: 24px;
-            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-        }
-        .sheet-status .pulse {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow);
-            animation: pulse 1.6s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-        }
         .schedule-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
         .schedule-row {
             display: grid;
@@ -304,15 +291,132 @@
             color: var(--text-mute); padding: 60px 20px;
             border: 1px dashed var(--line); font-size: 13px;
         }
-        .skeleton-row { display: grid; grid-template-columns: 90px 1fr 1.5fr 1fr; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--line); }
-        .skeleton-bar {
-            height: 16px;
-            background: linear-gradient(90deg, var(--bg-elev) 0%, var(--bg-card) 50%, var(--bg-elev) 100%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 2px;
+
+        /* ===== Schedule edit controls ===== */
+        .schedule-controls {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
         }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .schedule-note {
+            font-family: var(--font-mono); font-size: 11px;
+            color: var(--text-mute); letter-spacing: 1px;
+        }
+        .schedule-buttons { display: flex; gap: 8px; }
+
+        /* row clickable */
+        .schedule-row { cursor: pointer; }
+        .schedule-row .sch-edit-hint {
+            font-family: var(--font-mono); font-size: 9px;
+            color: var(--text-mute); letter-spacing: 2px;
+            opacity: 0; transition: opacity .25s;
+            margin-left: 8px;
+        }
+        .schedule-row:hover .sch-edit-hint { opacity: 1; color: var(--cyan); }
+
+        /* generic button */
+        .btn {
+            font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            padding: 9px 14px; border: 1px solid var(--line);
+            background: transparent; color: var(--text);
+            cursor: pointer; transition: all .2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: var(--cyan); color: #000; border-color: var(--cyan); }
+        .btn-primary:hover { background: #00d6ad; border-color: #00d6ad; }
+        .btn-ghost { color: var(--text-dim); }
+        .btn-ghost:hover { color: var(--text); border-color: var(--text-dim); }
+        .btn-danger { color: var(--red); border-color: var(--red); }
+        .btn-danger:hover { background: var(--red); color: #fff; }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 10000; padding: 24px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .modal-overlay.show { display: flex; animation: fadeIn .2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal {
+            background: var(--bg-elev);
+            border: 1px solid var(--line);
+            width: 100%; max-width: 460px;
+            max-height: 90vh; overflow-y: auto;
+            animation: slideInModal .3s cubic-bezier(.2,.8,.2,1);
+        }
+        @keyframes slideInModal {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-head {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 22px; border-bottom: 1px solid var(--line);
+        }
+        .modal-head h3 {
+            font-family: var(--font-display); font-size: 1.5rem;
+            letter-spacing: 3px; color: var(--cyan);
+        }
+        .modal-close {
+            width: 36px; height: 36px;
+            background: transparent; border: 1px solid var(--line);
+            color: var(--text); cursor: pointer;
+            font-size: 18px; line-height: 1;
+            transition: all .2s;
+        }
+        .modal-close:hover { border-color: var(--cyan); color: var(--cyan); }
+        .modal-form { padding: 22px; }
+        .form-row { margin-bottom: 16px; }
+        .form-row label {
+            display: block;
+            font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+            letter-spacing: 2px; color: var(--text-dim);
+            margin-bottom: 6px; text-transform: uppercase;
+        }
+        .form-row input[type="text"],
+        .form-row input[type="date"],
+        .form-row select {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-family: var(--font-body); font-size: 14px;
+            padding: 10px 12px;
+            transition: border-color .2s;
+        }
+        .form-row input:focus,
+        .form-row select:focus {
+            outline: none; border-color: var(--cyan);
+        }
+        .form-row input::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+        .form-row select {
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%2300ffcc' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+            background-repeat: no-repeat; background-position: right 12px center;
+            padding-right: 36px;
+        }
+        .form-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 22px; gap: 10px; flex-wrap: wrap;
+        }
+        .form-actions-right { display: flex; gap: 8px; }
+        .form-actions .btn-danger.hidden { display: none; }
+
+        /* mobile */
+        @media (max-width: 880px) {
+            .schedule-controls { gap: 10px; }
+            .schedule-note { font-size: 10px; }
+            .btn { font-size: 10px; padding: 8px 12px; }
+            .modal { max-width: 100%; max-height: 95vh; }
+            .modal-form { padding: 18px; }
+            .form-actions { flex-direction: column-reverse; align-items: stretch; }
+            .form-actions-right { display: flex; gap: 8px; }
+            .form-actions-right .btn { flex: 1; }
+            .form-actions .btn-danger { width: 100%; }
+        }
 
         /* ============================ LOCATIONS ============================ */
         .locations-grid {
@@ -620,23 +724,6 @@
             border: 0; border-radius: 8px;
         }
 
-        /* ============================ INSTAGRAM ============================ */
-        .insta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .insta-item { aspect-ratio: 1; background: var(--bg-elev); overflow: hidden; position: relative; cursor: pointer; }
-        .insta-item img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform .6s ease, filter .4s;
-            filter: grayscale(0.4) brightness(0.85);
-        }
-        .insta-item::after {
-            content: 'VIEW'; position: absolute; inset: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 3px;
-            color: var(--cyan); background: rgba(0,0,0,0.5);
-            opacity: 0; transition: opacity .3s;
-        }
-        .insta-item:hover img { transform: scale(1.08); filter: grayscale(0) brightness(1); }
-        .insta-item:hover::after { opacity: 1; }
 
         /* ============================ FOOTER ============================ */
         footer { background: var(--bg-elev); padding: 60px 8vw 30px; border-top: 1px solid var(--line); margin-top: 60px; }
@@ -708,7 +795,13 @@
             }
             @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
 
-            .hero { padding: 110px 6vw 60px; }
+            .hero {
+                padding: 130px 6vw 60px;
+                justify-content: flex-start;
+                min-height: 100dvh;
+            }
+            .hero h1 { font-size: clamp(3.5rem, 16vw, 6rem); margin-bottom: 24px; }
+            .hero-eyebrow { margin-bottom: 16px; font-size: 10px; }
             .hero-meta { gap: 12px 24px; font-size: 11px; }
             section { padding: 80px 6vw; }
             .section-head { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -719,8 +812,6 @@
             .sch-day { font-size: 2.2rem; }
             .sch-time, .sch-loc, .sch-memo { grid-column: 2; text-align: left; }
             .sch-memo .tag { font-size: 11px; }
-            .skeleton-row { grid-template-columns: 70px 1fr; gap: 12px 16px; }
-            .insta-grid { grid-template-columns: repeat(2, 1fr); }
             .event-card.featured { grid-column: span 1; }
             .event-card.featured .event-title { font-size: 1.8rem; }
             .footer-inner { grid-template-columns: 1fr; gap: 30px; }
@@ -748,7 +839,6 @@
             <a href="#schedule">SCHEDULE</a>
             <a href="#battles">BATTLES</a>
             <a href="#videos">VIDEOS</a>
-            <a href="#feed">FEED</a>
             <button class="install-btn" id="install-btn">+ INSTALL</button>
         </nav>
     </header>
@@ -793,15 +883,14 @@
             <h2 class="reveal">PRACTICE <span class="accent">SCHEDULE</span></h2>
             <div class="section-num reveal">SECTION / <strong>01</strong></div>
         </div>
-        <div class="sheet-status reveal">
-            <span class="pulse"></span>
-            <span id="sheet-status-text">GOOGLE SHEETS と同期中…</span>
+        <div class="schedule-controls reveal">
+            <span class="schedule-note" id="schedule-note">タップ/クリックで編集できます</span>
+            <div class="schedule-buttons">
+                <button class="btn btn-ghost" id="btn-reset" title="初期データに戻す">RESET</button>
+                <button class="btn btn-primary" id="btn-add">+ ADD</button>
+            </div>
         </div>
-        <div class="schedule-list" id="schedule-container">
-            <div class="skeleton-row"><div class="skeleton-bar" style="width:60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width:80%"></div><div class="skeleton-bar" style="width:40%"></div></div>
-            <div class="skeleton-row"><div class="skeleton-bar" style="width:60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width:80%"></div><div class="skeleton-bar" style="width:40%"></div></div>
-            <div class="skeleton-row"><div class="skeleton-bar" style="width:60%"></div><div class="skeleton-bar"></div><div class="skeleton-bar" style="width:80%"></div><div class="skeleton-bar" style="width:40%"></div></div>
-        </div>
+        <div class="schedule-list" id="schedule-container"></div>
     </section>
 
     <!-- LOCATIONS -->
@@ -880,19 +969,6 @@
         </div>
     </section>
 
-    <!-- INSTAGRAM -->
-    <section id="feed">
-        <div class="section-head">
-            <h2 class="reveal">@<span class="accent">EAGLE</span></h2>
-            <div class="section-num reveal">SECTION / <strong>06</strong></div>
-        </div>
-        <div class="insta-grid">
-            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1502224562085-6dde11ab2ea8?q=80&w=600&auto=format&fit=crop" alt="ig1"></a>
-            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1535525153412-5a42439a210d?q=80&w=600&auto=format&fit=crop" alt="ig2"></a>
-            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1518834107812-67b0b7c58434?q=80&w=600&auto=format&fit=crop" alt="ig3"></a>
-            <a href="#" class="insta-item reveal"><img src="https://images.unsplash.com/photo-1482029255085-35a4a48b7084?q=80&w=600&auto=format&fit=crop" alt="ig4"></a>
-        </div>
-    </section>
 
     <footer>
         <div class="footer-inner">
@@ -917,25 +993,46 @@
         </div>
     </footer>
 
+    <!-- EDIT MODAL -->
+    <div class="modal-overlay" id="modal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-head">
+                <h3 id="modal-title">PRACTICE</h3>
+                <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+            </div>
+            <form class="modal-form" id="modal-form">
+                <div class="form-row">
+                    <label for="f-date">日付</label>
+                    <input type="date" id="f-date" required>
+                </div>
+                <div class="form-row">
+                    <label for="f-time">時間</label>
+                    <input type="text" id="f-time" placeholder="例: 19:00-21:00" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <label for="f-loc">場所</label>
+                    <select id="f-loc">
+                        <!-- JSで生成 (LOCATIONS+その他) -->
+                    </select>
+                    <input type="text" id="f-loc-custom" placeholder="場所を入力" style="display:none; margin-top:8px;" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <label for="f-memo">メモ</label>
+                    <input type="text" id="f-memo" placeholder="例: バトル形式 / 基礎" autocomplete="off">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" id="btn-delete">削除</button>
+                    <div class="form-actions-right">
+                        <button type="button" class="btn btn-ghost" id="btn-cancel">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <script>
-        /* ===========================================================
-           ▼ Google Sheets 連携
-           ▼▼▼ 設定方法 ▼▼▼
-           1. Googleスプレッドシートを作る (1ファイル / 2タブ構成)
-              - タブ1の名前を "schedule" にする (列: date, time, location, memo)
-              - タブ2の名前を "events"   にする (列: date, title, location, prize, link, tag, featured, status, battlers, desc, updated)
-           2. スプシ右上の「共有」→「リンクを知っている全員」を「閲覧者」に変更
-           3. ブラウザのアドレスバーの URL をそのまま sheetUrl に貼り付ける (編集URLでOK)
-           =========================================================== */
-        const CONFIG = {
-            // スプシのURL (編集URLそのままでOK)
-            sheetUrl: 'https://docs.google.com/spreadsheets/d/12PlXavSEtoCbF0_lV7OauKn_k1KaEhpPYbdwkoFw7x4/edit?usp=sharing',
-            // タブ(シート)名
-            scheduleTab: 'schedule',
-            eventsTab: 'events'
-        };
-
         /* ===========================================================
            ▼ 練習場所 (LOCATIONS)
            各カードに表示する練習場所。
@@ -1005,16 +1102,43 @@
             },
         ];
 
-        const FALLBACK_SCHEDULE = [
-            { date: '2026-05-02', time: '19:00-21:00', location: '渋谷区民センター 第2スタジオ', memo: '基礎/フットワーク' },
-            { date: '2026-05-05', time: '18:00-22:00', location: '駅前 高架下スペース', memo: 'サイファー' },
-            { date: '2026-05-09', time: '19:00-21:00', location: '渋谷区民センター 第1スタジオ', memo: 'バトル形式' },
-            { date: '2026-05-12', time: '19:00-21:00', location: '駒沢オリンピック公園', memo: 'パワームーブ' },
+        /* ===========================================================
+           ▼ 練習スケジュール (SCHEDULE)
+           ここに練習日を追加していく。新しいの追加・古いの削除はこの配列を編集。
+           - date: "YYYY-MM-DD" 形式
+           - time: 任意。空でもOK
+           - location: 場所名
+           - memo: 練習内容のメモ (省略可)
+           =========================================================== */
+        const SCHEDULE = [
+            { date: '2026-05-02', time: '19:00-21:00', location: '上智大学 11号館', memo: '基礎/フットワーク' },
+            { date: '2026-05-05', time: '18:00-22:00', location: 'スタジオワークル大久保', memo: 'バトル練' },
+            { date: '2026-05-09', time: '19:00-21:00', location: '上智大学 11号館', memo: 'ジャンルブレイク' },
+            { date: '2026-05-12', time: '19:00-21:00', location: 'スタジオワークル大久保', memo: 'パワームーブ' },
             { date: '2026-05-16', time: '13:00-17:00', location: '代々木公園', memo: '野外練習' },
-            { date: '2026-05-19', time: '19:00-21:00', location: '渋谷区民センター 第2スタジオ', memo: 'ミックス' }
+            { date: '2026-05-19', time: '19:00-21:00', location: '上智大学 11号館', memo: 'ミックス' }
         ];
 
-        const FALLBACK_EVENTS = [
+        /* ===========================================================
+           ▼ バトル/大会情報 (BATTLES)
+           参加予定の大会・サイファー・出場予定者などを管理。
+           - date: "YYYY-MM-DD" 形式 (必須)
+           - title: 大会名 (必須)
+           - location: 開催地
+           - prize: 賞金/タイトル
+           - link: 詳細ページURL (省略可)
+           - tag: WORLD | JAPAN | LOCAL | CYPHER  (フィルタで使われる)
+           - featured: true で大カード+カウントダウン対象
+           - status: 'confirmed' | 'tba' | 'entry' | 'closed'
+              confirmed: 開催確定 (シアン)
+              tba: 詳細未定 (黄)
+              entry: エントリー受付中 (マゼンタ・点滅)
+              closed: 終了/締切済 (グレー)
+           - battlers: 出場者の配列。"★名前" でスター表示
+           - desc: 説明
+           - updated: 最終更新日 "YYYY-MM-DD"
+           =========================================================== */
+        const BATTLES = [
             { date: '2026-08-23', title: 'RED BULL BC ONE CYPHER JAPAN 2026', location: '名古屋', prize: '日本一 / Last Chance Cypher出場権', link: 'https://www.redbull.com/jp-ja/events/red-bull-bc-one-cypher-japan', tag: 'JAPAN', featured: true, status: 'confirmed', battlers: ['★ISSIN', '★Shigekix', '★Riko', '★AYUMI', 'HIRO10', 'AYANE', '+地方予選優勝者'], desc: '日本最高峰のソロバトル。B-Boy 16名 / B-Girl 8名が日本一の座を争う。優勝者はトロントの世界大会へ。', updated: '2026-04-25' },
             { date: '2026-06-13', title: 'TOKYO CITY CYPHER', location: 'Zouk Tokyo (銀座)', prize: 'Cypher Japan 出場権', link: '', tag: 'CYPHER', featured: false, status: 'entry', battlers: ['公募中'], desc: 'Red Bull BC One 東京予選。勝者は名古屋の日本決勝へ進出。', updated: '2026-04-25' },
             { date: '2026-08-15', title: 'UK B-BOY CHAMPIONSHIPS WORLD FINAL', location: 'Manchester, UK', prize: '世界3大大会タイトル', link: '', tag: 'WORLD', featured: false, status: 'confirmed', battlers: ['日本代表 (予選通過チーム)'], desc: '6 vs 6のクルーバトル世界最高峰。', updated: '2026-04-20' },
@@ -1031,85 +1155,6 @@
         function formatNow() { const d = new Date(); return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`; }
         function findLatestUpdated(events) { const dates = events.map(e => e.updated).filter(Boolean).sort(); return dates.length ? dates[dates.length-1] : '—'; }
 
-        /* ===========================================================
-           CSV パーサー
-           =========================================================== */
-        function parseCSV(text) {
-            const rows = []; let row = [], field = '', inQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                const c = text[i], n = text[i+1];
-                if (inQuotes) {
-                    if (c === '"' && n === '"') { field += '"'; i++; }
-                    else if (c === '"') { inQuotes = false; }
-                    else { field += c; }
-                } else {
-                    if (c === '"') { inQuotes = true; }
-                    else if (c === ',') { row.push(field); field = ''; }
-                    else if (c === '\n' || c === '\r') {
-                        if (c === '\r' && n === '\n') i++;
-                        row.push(field); field = '';
-                        if (row.some(v => v.trim() !== '')) rows.push(row);
-                        row = [];
-                    } else { field += c; }
-                }
-            }
-            if (field !== '' || row.length) { row.push(field); rows.push(row); }
-            return rows;
-        }
-        function csvToObjects(text) {
-            const rows = parseCSV(text);
-            if (rows.length < 2) return [];
-            const headers = rows[0].map(h => h.trim().toLowerCase());
-            return rows.slice(1).map(r => {
-                const obj = {};
-                headers.forEach((h, i) => obj[h] = (r[i] || '').trim());
-                if (obj.battlers) obj.battlers = obj.battlers.split(/[,、]/).map(s => s.trim()).filter(Boolean);
-                return obj;
-            });
-        }
-        // スプシのURL/IDから シートIDを抽出
-        function extractSheetId(urlOrId) {
-            if (!urlOrId) return '';
-            const s = String(urlOrId).trim();
-            // /d/ID/ パターン
-            const m = s.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (m) return m[1];
-            // ID単体
-            if (/^[a-zA-Z0-9_-]{20,}$/.test(s)) return s;
-            return '';
-        }
-
-        // gviz エンドポイントから CSV を取得 (タブ名指定可)
-        // 編集URLしか持っていなくても動く。シートを「リンクを知っている全員が閲覧可能」に共有しておくこと。
-        async function fetchSheet(sheetUrl, tabName) {
-            if (!sheetUrl || sheetUrl.includes('YOUR_')) return null;
-            const id = extractSheetId(sheetUrl);
-            if (!id) {
-                console.warn('[Sheet] スプレッドシートのURLが認識できません:', sheetUrl);
-                return null;
-            }
-            // gviz エンドポイント (CSV出力)
-            const url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
-            try {
-                const res = await fetch(url);
-                if (!res.ok) {
-                    console.warn(`[Sheet "${tabName}"] HTTP ${res.status} - シートが「リンクを知っている全員が閲覧可能」に共有されているか確認してください`);
-                    return null;
-                }
-                const text = await res.text();
-                // gvizはエラー時にHTMLを返すのでチェック
-                if (text.trim().startsWith('<')) {
-                    console.warn(`[Sheet "${tabName}"] HTMLが返されました - タブ名 "${tabName}" が存在しないか、シートが非公開の可能性があります`);
-                    return null;
-                }
-                const data = csvToObjects(text);
-                console.log(`[Sheet "${tabName}"] ${data.length} 件取得`);
-                return data;
-            } catch (e) {
-                console.warn(`[Sheet "${tabName}"] fetch失敗:`, e.message);
-                return null;
-            }
-        }
 
         /* ===========================================================
            日付処理
@@ -1134,19 +1179,41 @@
         function daysUntil(d) { return Math.ceil((d - new Date()) / (1000*60*60*24)); }
 
         /* ===========================================================
-           SCHEDULE 描画
+           SCHEDULE 描画 + EDIT
            =========================================================== */
-        function renderSchedule(items) {
+        const SCHEDULE_STORAGE_KEY = 'eagle-schedule-v1';
+
+        // localStorageからユーザー編集版を読み込む。なければデフォルトのSCHEDULEを使う
+        function loadSchedule() {
+            try {
+                const saved = localStorage.getItem(SCHEDULE_STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) return parsed;
+                }
+            } catch (e) { console.warn('[Schedule] load failed', e); }
+            return JSON.parse(JSON.stringify(SCHEDULE)); // ディープコピー
+        }
+
+        function saveScheduleToStorage(items) {
+            try {
+                localStorage.setItem(SCHEDULE_STORAGE_KEY, JSON.stringify(items));
+            } catch (e) { console.error('[Schedule] save failed', e); }
+        }
+
+        let userSchedule = []; // 描画中のスケジュール (日付ソート前)
+
+        function renderSchedule() {
             const container = document.getElementById('schedule-container');
-            const statusText = document.getElementById('sheet-status-text');
+            const items = userSchedule;
             if (!items || items.length === 0) {
-                container.innerHTML = '<div class="empty-state">予定が登録されていません</div>';
+                container.innerHTML = '<div class="empty-state">予定が登録されていません<br>右上の「+ ADD」から追加できます</div>';
                 return;
             }
             const today = new Date(); today.setHours(0,0,0,0);
-            const enriched = items.map(item => {
+            const enriched = items.map((item, originalIdx) => {
                 const d = parseDate(item.date);
-                return { ...item, _date: d, _isPast: d ? d < today : false };
+                return { ...item, _date: d, _isPast: d ? d < today : false, _idx: originalIdx };
             }).filter(it => it._date).sort((a,b) => a._date - b._date);
             const past = enriched.filter(it => it._isPast).slice(-2);
             const upcoming = enriched.filter(it => !it._isPast);
@@ -1160,15 +1227,171 @@
                 const wk = WEEKDAYS[d.getDay()];
                 const row = document.createElement('div');
                 row.className = 'schedule-row reveal' + (item._isPast ? ' is-past' : '');
+                row.dataset.idx = item._idx;
+                row.setAttribute('role', 'button');
+                row.setAttribute('tabindex', '0');
                 row.innerHTML = `
                     <div class="sch-day"><span class="month">${mon}</span>${day}</div>
                     <div class="sch-time"><span class="weekday">${wk.toUpperCase()}</span>${escapeHtml(item.time || '')}</div>
                     <div class="sch-loc">${escapeHtml(item.location || '')}</div>
-                    <div class="sch-memo">${item.memo ? `<span class="tag">${escapeHtml(item.memo)}</span>` : ''}</div>`;
+                    <div class="sch-memo">
+                        ${item.memo ? `<span class="tag">${escapeHtml(item.memo)}</span>` : ''}
+                        <span class="sch-edit-hint">EDIT →</span>
+                    </div>`;
+                row.addEventListener('click', () => openModal(item._idx));
+                row.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(item._idx); }
+                });
                 container.appendChild(row);
             });
-            statusText.textContent = `LAST SYNC: ${formatNow()} / ${list.length} ENTRIES`;
             observeReveal();
+        }
+
+        /* ===========================================================
+           EDIT MODAL
+           =========================================================== */
+        let editingIndex = -1; // -1 = 新規追加
+
+        function openModal(idx) {
+            editingIndex = (typeof idx === 'number') ? idx : -1;
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const fDate = document.getElementById('f-date');
+            const fTime = document.getElementById('f-time');
+            const fLoc = document.getElementById('f-loc');
+            const fLocCustom = document.getElementById('f-loc-custom');
+            const fMemo = document.getElementById('f-memo');
+            const btnDel = document.getElementById('btn-delete');
+
+            // 場所セレクトを構築 (LOCATIONSから自動)
+            fLoc.innerHTML = '';
+            // 「未選択」オプション
+            const optEmpty = new Option('場所を選択...', '');
+            fLoc.appendChild(optEmpty);
+            // LOCATIONS のすべての場所をオプションとして追加
+            LOCATIONS.forEach(loc => {
+                fLoc.appendChild(new Option(loc.name, loc.name));
+            });
+            // 「その他」
+            fLoc.appendChild(new Option('━ その他 (自由入力) ━', '__custom__'));
+
+            if (editingIndex >= 0) {
+                title.textContent = 'EDIT PRACTICE';
+                btnDel.classList.remove('hidden');
+                const item = userSchedule[editingIndex];
+                fDate.value = item.date || '';
+                fTime.value = item.time || '';
+                fMemo.value = item.memo || '';
+                // 既存の場所がLOCATIONSに含まれていればselectで選択、無ければ自由入力
+                const known = LOCATIONS.some(l => l.name === item.location);
+                if (known) {
+                    fLoc.value = item.location;
+                    fLocCustom.style.display = 'none';
+                    fLocCustom.value = '';
+                } else if (item.location) {
+                    fLoc.value = '__custom__';
+                    fLocCustom.style.display = 'block';
+                    fLocCustom.value = item.location;
+                } else {
+                    fLoc.value = '';
+                    fLocCustom.style.display = 'none';
+                }
+            } else {
+                title.textContent = 'ADD PRACTICE';
+                btnDel.classList.add('hidden');
+                // デフォルト値: 今日
+                const today = new Date();
+                fDate.value = today.toISOString().slice(0,10);
+                fTime.value = '';
+                fLoc.value = '';
+                fLocCustom.style.display = 'none';
+                fLocCustom.value = '';
+                fMemo.value = '';
+            }
+
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => fDate.focus(), 100);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function setupScheduleEditing() {
+            const fLoc = document.getElementById('f-loc');
+            const fLocCustom = document.getElementById('f-loc-custom');
+            const form = document.getElementById('modal-form');
+
+            // 「その他」選択時に自由入力欄を表示
+            fLoc.addEventListener('change', () => {
+                if (fLoc.value === '__custom__') {
+                    fLocCustom.style.display = 'block';
+                    fLocCustom.focus();
+                } else {
+                    fLocCustom.style.display = 'none';
+                }
+            });
+
+            // 保存
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const date = document.getElementById('f-date').value;
+                const time = document.getElementById('f-time').value.trim();
+                const memo = document.getElementById('f-memo').value.trim();
+                let location = fLoc.value;
+                if (location === '__custom__') location = fLocCustom.value.trim();
+                if (location === '') location = '';
+
+                if (!date) { alert('日付を入力してください'); return; }
+
+                const item = { date, time, location, memo };
+                if (editingIndex >= 0) {
+                    userSchedule[editingIndex] = item;
+                } else {
+                    userSchedule.push(item);
+                }
+                saveScheduleToStorage(userSchedule);
+                renderSchedule();
+                closeModal();
+            });
+
+            // 削除
+            document.getElementById('btn-delete').addEventListener('click', () => {
+                if (editingIndex < 0) return;
+                if (!confirm('この予定を削除しますか?')) return;
+                userSchedule.splice(editingIndex, 1);
+                saveScheduleToStorage(userSchedule);
+                renderSchedule();
+                closeModal();
+            });
+
+            // キャンセル/閉じる
+            document.getElementById('btn-cancel').addEventListener('click', closeModal);
+            document.getElementById('modal-close').addEventListener('click', closeModal);
+            document.getElementById('modal').addEventListener('click', (e) => {
+                if (e.target.id === 'modal') closeModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('modal').classList.contains('show')) {
+                    closeModal();
+                }
+            });
+
+            // + ADD
+            document.getElementById('btn-add').addEventListener('click', () => openModal(-1));
+
+            // RESET
+            document.getElementById('btn-reset').addEventListener('click', () => {
+                if (!confirm('編集内容を破棄して初期データに戻しますか?')) return;
+                localStorage.removeItem(SCHEDULE_STORAGE_KEY);
+                userSchedule = loadSchedule();
+                renderSchedule();
+            });
         }
 
         /* ===========================================================
@@ -1486,26 +1709,23 @@
         /* ===========================================================
            INIT
            =========================================================== */
-        async function init() {
+        function init() {
             observeReveal();
             setupPWA();
             setupHamburger();
             renderLocations();
             renderVideos();
 
-            const [scheduleData, eventsData] = await Promise.all([
-                fetchSheet(CONFIG.sheetUrl, CONFIG.scheduleTab),
-                fetchSheet(CONFIG.sheetUrl, CONFIG.eventsTab)
-            ]);
-            const schedule = scheduleData || FALLBACK_SCHEDULE;
-            const events = eventsData || FALLBACK_EVENTS;
-
             const today = new Date(); today.setHours(0,0,0,0);
-            allEvents = events.map(it => ({ ...it, _date: parseDate(it.date) }))
+            allEvents = BATTLES.map(it => ({ ...it, _date: parseDate(it.date) }))
                               .filter(it => it._date && it._date >= today)
                               .sort((a,b) => a._date - b._date);
 
-            renderSchedule(schedule);
+            // schedule: localStorageから読み込み (なければデフォルト)
+            userSchedule = loadSchedule();
+            renderSchedule();
+            setupScheduleEditing();
+
             renderEvents();
             setupFilters();
             setupCountdown(allEvents);
@@ -1513,10 +1733,6 @@
 
             document.getElementById('events-count').textContent = allEvents.length;
             document.getElementById('events-updated').textContent = findLatestUpdated(allEvents);
-
-            if (!scheduleData && !eventsData) {
-                document.getElementById('sheet-status-text').textContent = 'デモデータ表示中 / SHEETS未設定';
-            }
         }
 
         document.addEventListener('DOMContentLoaded', init);
