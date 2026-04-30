@@ -67,9 +67,10 @@
         header {
             position: fixed; top: 0; left: 0; right: 0;
             padding: 18px 32px;
-            padding-top: calc(18px + env(safe-area-inset-top));
-            padding-left: calc(32px + env(safe-area-inset-left));
-            padding-right: calc(32px + env(safe-area-inset-right));
+            /* iOS Safari/PWA: env()があれば加算、無くても最低40px確保 */
+            padding-top: max(40px, calc(18px + env(safe-area-inset-top)));
+            padding-left: max(20px, calc(16px + env(safe-area-inset-left)));
+            padding-right: max(20px, calc(16px + env(safe-area-inset-right)));
             background: rgba(10,10,10,0.8);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             display: flex; justify-content: space-between; align-items: center;
@@ -773,10 +774,14 @@
                 background: var(--bg-elev);
                 border-left: 1px solid var(--line);
                 flex-direction: column;
-                justify-content: center;
+                justify-content: flex-start;
                 align-items: flex-start;
                 gap: 28px;
-                padding: 80px 32px 32px;
+                /* ステータスバー(時計)と被らないように上余白を最低100px確保 */
+                padding: max(100px, calc(80px + env(safe-area-inset-top))) 32px 32px;
+                /* ドラッグでスクロールできるように */
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
                 transform: translateX(100%);
                 transition: transform .35s cubic-bezier(.2,.8,.2,1);
                 z-index: 1000;
@@ -798,7 +803,7 @@
 
             .hero {
                 padding: 130px 6vw 60px;
-                padding-top: calc(140px + env(safe-area-inset-top));
+                padding-top: max(140px, calc(140px + env(safe-area-inset-top)));
                 justify-content: flex-start;
                 min-height: 100dvh;
             }
@@ -1106,12 +1111,12 @@
            - memo: 練習内容のメモ (省略可)
            =========================================================== */
         const SCHEDULE = [
-            { date: '2026-05-02', time: '19:00-21:00', location: '上智大学 11号館', memo: '基礎/フットワーク' },
-            { date: '2026-05-05', time: '18:00-22:00', location: 'スタジオワークル大久保', memo: 'バトル練' },
-            { date: '2026-05-09', time: '19:00-21:00', location: '上智大学 11号館', memo: 'ジャンルブレイク' },
-            { date: '2026-05-12', time: '19:00-21:00', location: 'スタジオワークル大久保', memo: 'パワームーブ' },
-            { date: '2026-05-16', time: '13:00-17:00', location: '代々木公園', memo: '野外練習' },
-            { date: '2026-05-19', time: '19:00-21:00', location: '上智大学 11号館', memo: 'ミックス' }
+            { date: '2026-05-02', time: '18:00-21:00', location: '上智大学 11号館', memo: '基礎/フットワーク' },
+            { date: '2026-05-05', time: '18:00-21:00', location: 'スタジオワークル大久保', memo: 'バトル練' },
+            { date: '2026-05-09', time: '18:00-21:00', location: '上智大学 11号館', memo: 'ジャンルブレイク' },
+            { date: '2026-05-12', time: '18:00-21:00', location: 'スタジオワークル大久保', memo: 'パワームーブ' },
+            { date: '2026-05-16', time: '18:00-21:00', location: '代々木公園', memo: '野外練習' },
+            { date: '2026-05-19', time: '18:00-21:00', location: '上智大学 11号館', memo: 'ミックス' }
         ];
 
         /* ===========================================================
