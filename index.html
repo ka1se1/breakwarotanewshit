@@ -1828,9 +1828,8 @@
                 const d = parseDate(item.date);
                 return { ...item, _date: d, _isPast: d ? d < today : false, _idx: originalIdx };
             }).filter(it => it._date).sort((a,b) => a._date - b._date);
-            const past = enriched.filter(it => it._isPast).slice(-2);
             const upcoming = enriched.filter(it => !it._isPast);
-            const list = [...past, ...upcoming];
+            const list = upcoming;
 
             container.innerHTML = '';
             list.forEach(item => {
