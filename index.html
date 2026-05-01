@@ -1171,6 +1171,61 @@
             .map-wrap iframe { height: 280px; }
             .playlist-info::before { font-size: 10rem; }
         }
+
+        /* Instagram CTA */
+        .instagram-cta {
+            display: block;
+            background: linear-gradient(135deg, #1a0d1a, #181818);
+            border: 1px solid var(--line);
+            padding: 48px 40px;
+            transition: border-color .35s, transform .35s;
+            position: relative;
+            overflow: hidden;
+        }
+        .instagram-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(225,48,108,0.1), rgba(255,46,99,0.05) 40%, transparent 70%);
+            opacity: 0;
+            transition: opacity .35s;
+        }
+        .instagram-cta:hover { border-color: var(--magenta); transform: translateY(-3px); }
+        .instagram-cta:hover::before { opacity: 1; }
+        .ig-cta-inner {
+            display: flex; align-items: center; gap: 28px;
+            position: relative; z-index: 1;
+        }
+        .ig-cta-icon { color: var(--magenta); flex-shrink: 0; transition: transform .35s; }
+        .instagram-cta:hover .ig-cta-icon { transform: scale(1.1) rotate(-5deg); }
+        .ig-cta-text { flex-grow: 1; }
+        .ig-cta-handle {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            letter-spacing: 2px;
+            color: var(--text);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .ig-cta-sub {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+        }
+        .ig-cta-arrow {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--magenta);
+            transition: transform .35s;
+            flex-shrink: 0;
+        }
+        .instagram-cta:hover .ig-cta-arrow { transform: translateX(8px); }
+        @media (max-width: 600px) {
+            .instagram-cta { padding: 32px 24px; }
+            .ig-cta-inner { gap: 16px; }
+            .ig-cta-icon svg { width: 36px; height: 36px; }
+        }
     </style>
 </head>
 <body>
@@ -1292,31 +1347,29 @@
         <div class="videos-grid" id="videos-grid"></div>
     </section>
 
-    <!-- PLAYLIST -->
-    <section id="playlist">
+    <!-- INSTAGRAM CTA -->
+    <section id="instagram">
         <div class="section-head">
-            <h2 class="reveal">CREW <span class="accent">PLAYLIST</span></h2>
+            <h2 class="reveal">FOLLOW <span class="accent">@DANCE_CREW_EAGLE</span></h2>
             <div class="section-num reveal">SECTION / <strong>04</strong></div>
         </div>
-        <div class="playlist-wrap">
-            <div class="playlist-info reveal">
-                <div>
-                    <div class="playlist-eyebrow">SOUND OF EAGLE</div>
-                    <h3 class="playlist-title">EAGLE<br><span>BREAKS</span></h3>
-                    <p class="playlist-desc">過去に踊った曲</p>
+        <a href="https://www.instagram.com/dance_crew_eagle/" target="_blank" rel="noopener" class="instagram-cta reveal">
+            <div class="ig-cta-inner">
+                <div class="ig-cta-icon">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
+                    </svg>
                 </div>
-                <div class="playlist-stats">
-                    <div><strong>50+</strong>TRACKS</div>
-                    <div><strong>3h</strong>RUNTIME</div>
-                    <div><strong>WEEKLY</strong>UPDATE</div>
+                <div class="ig-cta-text">
+                    <div class="ig-cta-handle">@dance_crew_eagle</div>
+                    <div class="ig-cta-sub">最新情報・練習風景・告知をチェック</div>
                 </div>
+                <div class="ig-cta-arrow">→</div>
             </div>
-            <div class="playlist-embed reveal">
-                <iframe allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" frameborder="0" height="450" style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/jp/playlist/eagle/pl.u-mJy8gdETzkvMr4K"></iframe>
-            </div>
-        </div>
+        </a>
     </section>
-
 
     <footer>
         <div class="footer-inner">
