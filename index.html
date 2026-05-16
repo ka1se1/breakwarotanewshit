@@ -182,6 +182,7 @@
                 radial-gradient(ellipse at 80% 70%, rgba(255,46,99,0.12), transparent 50%),
                 linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.85)),
                 url('https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=2000&auto=format&fit=crop') center/cover;
+            background-attachment: fixed;
             z-index: -1;
         }
         .hero::after {
@@ -351,6 +352,165 @@
         }
         .schedule-buttons { display: flex; gap: 8px; }
 
+        /* ===== Genre Tabs ===== */
+        .genre-tabs-wrap {
+            position: relative;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+        .genre-tabs-wrap::before,
+        .genre-tabs-wrap::after {
+            content: '';
+            position: absolute; top: 0; bottom: 0;
+            width: 30px; z-index: 2;
+            pointer-events: none;
+        }
+        .genre-tabs-wrap::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg), transparent);
+        }
+        .genre-tabs-wrap::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg), transparent);
+        }
+        .genre-tabs {
+            display: flex; gap: 4px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            touch-action: pan-x;
+            padding: 0 4px;
+            scroll-behavior: smooth;
+        }
+        .genre-tabs::-webkit-scrollbar { display: none; }
+        .genre-tab {
+            font-family: var(--font-display);
+            font-size: 14px;
+            letter-spacing: 2px;
+            background: transparent;
+            border: none;
+            color: var(--text-mute);
+            padding: 14px 18px 12px;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: color .25s;
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
+        }
+        .genre-tab:hover { color: var(--text); }
+        .genre-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; right: 0;
+            height: 2px;
+            background: var(--cyan);
+            transform: scaleX(0);
+            transition: transform .35s cubic-bezier(.6,.05,.28,.91);
+        }
+        .genre-tab.active {
+            color: var(--cyan);
+        }
+        .genre-tab.active::after { transform: scaleX(1); }
+        .genre-tab.is-main::before {
+            content: '★';
+            margin-right: 5px;
+            color: var(--cyan);
+            opacity: 0.8;
+            font-size: 9px;
+            vertical-align: middle;
+        }
+        .genre-tab .badge {
+            display: inline-block;
+            background: var(--bg-elev);
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 2px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .genre-tab.active .badge {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        /* ===== Swipe wrap ===== */
+        .schedule-swipe-wrap {
+            position: relative;
+            overflow: hidden;
+            touch-action: pan-y;
+        }
+        .schedule-list {
+            transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .25s;
+        }
+        .schedule-list.swiping { transition: none; }
+        .schedule-list.slide-out-left { transform: translateX(-30%); opacity: 0; }
+        .schedule-list.slide-out-right { transform: translateX(30%); opacity: 0; }
+        .schedule-list.slide-in-left {
+            animation: slideInLeft .35s cubic-bezier(.2,.8,.2,1);
+        }
+        .schedule-list.slide-in-right {
+            animation: slideInRight .35s cubic-bezier(.2,.8,.2,1);
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(30%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(-30%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* スワイプヒント */
+        .swipe-hint {
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-mute);
+            letter-spacing: 4px;
+            padding: 16px 0 8px;
+            opacity: 0.6;
+        }
+        .swipe-hint span {
+            display: inline-block;
+            animation: swipeHint 3s infinite ease-in-out;
+        }
+        @keyframes swipeHint {
+            0%, 100% { transform: translateX(0); }
+            33% { transform: translateX(-8px); }
+            66% { transform: translateX(8px); }
+        }
+        /* PCではスワイプヒント非表示 */
+        @media (hover: hover) {
+            .swipe-hint { display: none; }
+        }
+
+        /* 閲覧専用モード時のUI制御 */
+        .schedule-list.readonly .sch-edit-btn {
+            display: none;
+        }
+        .schedule-controls.readonly .btn-add,
+        .schedule-controls.readonly .btn-reset {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .readonly-banner {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--yellow);
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            border: 1px dashed var(--yellow);
+            background: rgba(255,214,10,0.05);
+            margin-bottom: 12px;
+            display: none;
+        }
+        .readonly-banner.show { display: block; }
+
         /* row clickable */
         .schedule-row { cursor: pointer; }
         .sch-edit-btn {
@@ -477,6 +637,69 @@
         }
         .form-actions-right { display: flex; gap: 8px; }
         .form-actions .btn-danger.hidden { display: none; }
+
+        /* ===== IMPORT MODAL ===== */
+        .radio-group { display: flex; flex-direction: column; gap: 8px; }
+        .radio-label {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 14px; color: var(--text);
+            cursor: pointer;
+            padding: 8px 12px;
+            border: 1px solid var(--line);
+            transition: border-color .2s, background .2s;
+        }
+        .radio-label:hover { border-color: var(--text-mute); }
+        .radio-label input { accent-color: var(--cyan); width: 16px; height: 16px; }
+        .radio-label:has(input:checked) {
+            border-color: var(--cyan);
+            background: rgba(0,255,204,0.06);
+        }
+        .import-preview {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--line);
+            padding: 14px;
+            margin: 16px 0;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+        .import-preview .preview-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--line);
+            color: var(--text-dim);
+        }
+        .import-preview .preview-row:last-child { border-bottom: none; }
+        .import-preview .preview-row strong { color: var(--cyan); font-weight: 700; }
+        .import-preview .preview-head {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text);
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line);
+        }
+        .import-preview .preview-head span { color: var(--cyan); }
+        .import-status {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            min-height: 18px;
+            margin: 10px 0;
+            letter-spacing: 0.5px;
+        }
+        .import-status.error { color: var(--red); }
+        .import-status.success { color: var(--cyan); }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
 
         /* mobile */
         @media (max-width: 880px) {
@@ -1041,13 +1264,13 @@
         @media (max-width: 880px) {
             header {
                 padding: 16px 20px;
-                padding-top: 60px; /* iPhone Pro Max のステータスバー(~59px)+余白 */
+                padding-top: 80px; /* iPhone Pro Max のステータスバー(~59px)+余白 */
             }
             .logo .logo-main { font-size: 18px; letter-spacing: 3px; }
             .logo .logo-sub { font-size: 8px; letter-spacing: 1.5px; }
 
             /* ハンバーガー表示 (上余白80pxに合わせて中央寄せ) */
-            .hamburger { display: block; margin-top: 24px; }
+            .hamburger { display: block; margin-top: 32px; }
 
             /* ===== FULLSCREEN MENU ===== */
             .nav-links {
@@ -1171,61 +1394,6 @@
             .map-wrap iframe { height: 280px; }
             .playlist-info::before { font-size: 10rem; }
         }
-
-        /* Instagram CTA */
-        .instagram-cta {
-            display: block;
-            background: linear-gradient(135deg, #1a0d1a, #181818);
-            border: 1px solid var(--line);
-            padding: 48px 40px;
-            transition: border-color .35s, transform .35s;
-            position: relative;
-            overflow: hidden;
-        }
-        .instagram-cta::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(225,48,108,0.1), rgba(255,46,99,0.05) 40%, transparent 70%);
-            opacity: 0;
-            transition: opacity .35s;
-        }
-        .instagram-cta:hover { border-color: var(--magenta); transform: translateY(-3px); }
-        .instagram-cta:hover::before { opacity: 1; }
-        .ig-cta-inner {
-            display: flex; align-items: center; gap: 28px;
-            position: relative; z-index: 1;
-        }
-        .ig-cta-icon { color: var(--magenta); flex-shrink: 0; transition: transform .35s; }
-        .instagram-cta:hover .ig-cta-icon { transform: scale(1.1) rotate(-5deg); }
-        .ig-cta-text { flex-grow: 1; }
-        .ig-cta-handle {
-            font-family: var(--font-display);
-            font-size: clamp(1.6rem, 4vw, 2.4rem);
-            letter-spacing: 2px;
-            color: var(--text);
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-        .ig-cta-sub {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--text-dim);
-            letter-spacing: 1.5px;
-        }
-        .ig-cta-arrow {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            color: var(--magenta);
-            transition: transform .35s;
-            flex-shrink: 0;
-        }
-        .instagram-cta:hover .ig-cta-arrow { transform: translateX(8px); }
-        @media (max-width: 600px) {
-            .instagram-cta { padding: 32px 24px; }
-            .ig-cta-inner { gap: 16px; }
-            .ig-cta-icon svg { width: 36px; height: 36px; }
-        }
     </style>
 </head>
 <body>
@@ -1301,11 +1469,26 @@
                 </span>
             </div>
             <div class="schedule-buttons">
+                <button class="btn btn-ghost" id="btn-import" title="スプレッドシートから読み込む">IMPORT</button>
                 <button class="btn btn-ghost" id="btn-reset" title="初期データに戻す">RESET</button>
                 <button class="btn btn-primary" id="btn-add">+ ADD</button>
             </div>
         </div>
-        <div class="schedule-list" id="schedule-container"></div>
+
+        <!-- ジャンルタブ (スワイプ / クリックで切り替え) -->
+        <div class="genre-tabs-wrap reveal">
+            <div class="genre-tabs" id="genre-tabs"></div>
+        </div>
+
+        <div class="schedule-swipe-wrap" id="schedule-swipe-wrap">
+            <div class="readonly-banner" id="readonly-banner">⚠ このジャンルは閲覧専用 (BREAKのみ編集可)</div>
+            <div class="schedule-list" id="schedule-container"></div>
+        </div>
+
+        <!-- スワイプヒント -->
+        <div class="swipe-hint reveal" id="swipe-hint">
+            <span>← SWIPE →</span>
+        </div>
 
         <!-- スケジュール行をクリックするとここのマップが切り替わる -->
         <div class="map-wrap reveal" id="schedule-map-wrap" style="display:none;">
@@ -1347,43 +1530,37 @@
         <div class="videos-grid" id="videos-grid"></div>
     </section>
 
-    <!-- INSTAGRAM CTA -->
-    <section id="instagram">
+    <!-- PLAYLIST -->
+    <section id="playlist">
         <div class="section-head">
-            <h2 class="reveal">FOLLOW <span class="accent">@DANCE_CREW_EAGLE</span></h2>
+            <h2 class="reveal">CREW <span class="accent">PLAYLIST</span></h2>
             <div class="section-num reveal">SECTION / <strong>04</strong></div>
         </div>
-        <a href="https://www.instagram.com/dance_crew_eagle/" target="_blank" rel="noopener" class="instagram-cta reveal">
-            <div class="ig-cta-inner">
-                <div class="ig-cta-icon">
-                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <rect x="2" y="2" width="20" height="20" rx="5"/>
-                        <circle cx="12" cy="12" r="4"/>
-                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
-                    </svg>
+        <div class="playlist-wrap">
+            <div class="playlist-info reveal">
+                <div>
+                    <div class="playlist-eyebrow">SOUND OF EAGLE</div>
+                    <h3 class="playlist-title">EAGLE<br><span>BREAKS</span></h3>
+                    <p class="playlist-desc">練習中によくかける曲。Funk / Old School Hip Hop / Breaks。Spotifyで聴ける。</p>
                 </div>
-                <div class="ig-cta-text">
-                    <div class="ig-cta-handle">@dance_crew_eagle</div>
-                    <div class="ig-cta-sub">最新情報・練習風景・告知をチェック</div>
-                </div>
-            </div>
-        </a>
-        <a href="https://www.instagram.com/breakwarota_newshit" target="_blank" rel="noopener" class="instagram-cta reveal">
-            <div class="ig-cta-inner">
-                <div class="ig-cta-icon">
-                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <rect x="2" y="2" width="20" height="20" rx="5"/>
-                        <circle cx="12" cy="12" r="4"/>
-                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
-                    </svg>
-                </div>
-                <div class="ig-cta-text">
-                    <div class="ig-cta-handle">@breakwarota_newshit</div>
-                    <div class="ig-cta-sub">最新情報・練習風景・告知をチェック</div>
+                <div class="playlist-stats">
+                    <div><strong>50+</strong>TRACKS</div>
+                    <div><strong>3h</strong>RUNTIME</div>
+                    <div><strong>WEEKLY</strong>UPDATE</div>
                 </div>
             </div>
-        </a>
+            <div class="playlist-embed reveal">
+                <!-- ▼ プレイリストのID部分を変更してください ▼ -->
+                <iframe loading="lazy"
+                    src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0"
+                    allowfullscreen
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    title="Playlist">
+                </iframe>
+            </div>
+        </div>
     </section>
+
 
     <footer>
         <div class="footer-inner">
@@ -1445,6 +1622,49 @@
         </div>
     </div>
 
+    <!-- IMPORT MODAL -->
+    <div class="modal-overlay" id="import-modal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-labelledby="import-modal-title">
+            <div class="modal-head">
+                <h3 id="import-modal-title">IMPORT</h3>
+                <button class="modal-close" id="import-modal-close" aria-label="Close">×</button>
+            </div>
+            <div class="modal-form">
+                <p style="font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); margin-bottom: 18px; line-height: 1.7; letter-spacing: 0.5px;">
+                    サークル配布のスプシURLを貼って読み込み<br>
+                    ※ スプシは「リンクを知っている全員が閲覧可能」に設定
+                </p>
+                <div class="form-row">
+                    <label for="imp-url">スプシ URL</label>
+                    <input type="text" id="imp-url" placeholder="https://docs.google.com/spreadsheets/d/..." autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <label>取り込み方法</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="imp-mode" value="append" checked>
+                            <span>既存に追加 (重複は除外)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="imp-mode" value="replace">
+                            <span>すべて置き換え (推奨: 月初の新スプシ取込時)</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="imp-preview" class="import-preview" style="display:none;"></div>
+                <div id="imp-status" class="import-status"></div>
+                <div class="form-actions">
+                    <div></div>
+                    <div class="form-actions-right">
+                        <button type="button" class="btn btn-ghost" id="btn-imp-cancel">キャンセル</button>
+                        <button type="button" class="btn btn-ghost" id="btn-imp-fetch">読み込み</button>
+                        <button type="button" class="btn btn-primary" id="btn-imp-apply" disabled>適用</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         /* ===========================================================
@@ -1459,9 +1679,9 @@
            ※ enabled: true にして masterKey/binId を設定するとデバイス間共有モード
            =========================================================== */
         const SHARED = {
-            enabled: true, // ← true にすると共有モード ON
-            masterKey: '$2a$10$nDlszIP0fZqaVa3tWryz7e/xC9zkHsYjWSQoq0JkBzWS.lP.GNSE.',
-            binId: '69e06fd7856a6821893c5dec',
+            enabled: false, // ← true にすると共有モード ON
+            masterKey: 'YOUR_MASTER_KEY_HERE',
+            binId: 'YOUR_BIN_ID_HERE',
             pollInterval: 30000  // 30秒ごとに他デバイスの更新を取りに行く
         };
 
@@ -1681,8 +1901,45 @@
         }
 
         const SCHEDULE_STORAGE_KEY = 'eagle-schedule-v1';
+        const OTHER_GENRES_STORAGE_KEY = 'eagle-other-genres-v1';
         const SCHEDULE_BACKUP_KEY = 'eagle-schedule-backup-v1';
         const JSONBIN_BASE = 'https://api.jsonbin.io/v3/b/';
+
+        /* ===========================================================
+           GENRES (スプシの列インデックスとひも付け)
+           =========================================================== */
+        const GENRES = [
+            { id: 'break',   label: 'BREAK',    col: 10, isMain: true },
+            { id: 'hiphop1', label: 'HIPHOP 1', col: 2 },
+            { id: 'hiphop2', label: 'HIPHOP 2', col: 4 },
+            { id: 'lock1',   label: 'LOCK 1',   col: 6 },
+            { id: 'lock2',   label: 'LOCK 2',   col: 8 },
+            { id: 'jazz',    label: 'JAZZ',     col: 12 },
+            { id: 'pop',     label: 'POP',      col: 14 },
+            { id: 'house',   label: 'HOUSE',    col: 16 },
+            { id: 'girls1',  label: 'GIRLS 1',  col: 18 },
+            { id: 'girls2',  label: 'GIRLS 2',  col: 20 }
+        ];
+
+        let currentGenre = 'break'; // 表示中のジャンル
+        let otherGenresSchedule = {}; // { hiphop1: [...], lock1: [...], ... }
+
+        function loadOtherGenres() {
+            try {
+                const saved = localStorage.getItem(OTHER_GENRES_STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && typeof parsed === 'object') return parsed;
+                }
+            } catch (e) {}
+            return {};
+        }
+        function saveOtherGenres(data) {
+            try {
+                localStorage.setItem(OTHER_GENRES_STORAGE_KEY, JSON.stringify(data));
+            } catch (e) { console.error('[OtherGenres] save failed', e); }
+        }
+
 
         // localStorageからユーザー編集版を読み込む。なければデフォルトのSCHEDULEを使う
         function loadSchedule() {
@@ -1830,20 +2087,41 @@
 
         let userSchedule = []; // 描画中のスケジュール (日付ソート前)
 
+        function getActiveScheduleItems() {
+            if (currentGenre === 'break') return userSchedule;
+            return otherGenresSchedule[currentGenre] || [];
+        }
+
+        function isReadonlyGenre() {
+            return currentGenre !== 'break';
+        }
+
         function renderSchedule() {
             const container = document.getElementById('schedule-container');
-            const items = userSchedule;
+            const items = getActiveScheduleItems();
+            const readonly = isReadonlyGenre();
+
+            // 読み取り専用状態のUI制御
+            container.classList.toggle('readonly', readonly);
+            const controls = document.querySelector('.schedule-controls');
+            if (controls) controls.classList.toggle('readonly', readonly);
+            const banner = document.getElementById('readonly-banner');
+            if (banner) banner.classList.toggle('show', readonly);
+
             if (!items || items.length === 0) {
-                container.innerHTML = '<div class="empty-state">予定が登録されていません<br>右上の「+ ADD」から追加できます</div>';
+                container.innerHTML = readonly
+                    ? '<div class="empty-state">このジャンルの予定はまだありません<br>IMPORTでスプシから読み込んでください</div>'
+                    : '<div class="empty-state">予定が登録されていません<br>右上の「+ ADD」から追加できます</div>';
+                updateGenreBadges();
                 return;
             }
             const today = new Date(); today.setHours(0,0,0,0);
             const enriched = items.map((item, originalIdx) => {
                 const d = parseDate(item.date);
                 return { ...item, _date: d, _isPast: d ? d < today : false, _idx: originalIdx };
-            }).filter(it => it._date).sort((a,b) => a._date - b._date);
-            const upcoming = enriched.filter(it => !it._isPast);
-            const list = upcoming;
+            }).filter(it => it._date && !it._isPast)
+              .sort((a,b) => a._date - b._date);
+            const list = enriched;
 
             container.innerHTML = '';
             list.forEach(item => {
@@ -1863,12 +2141,12 @@
                     <div class="sch-loc">${escapeHtml(item.location || '')}</div>
                     <div class="sch-memo">
                         ${item.memo ? `<span class="tag">${escapeHtml(item.memo)}</span>` : ''}
-                        <button class="sch-edit-btn" type="button" aria-label="編集" data-edit="1">✎</button>
+                        ${readonly ? '' : '<button class="sch-edit-btn" type="button" aria-label="編集" data-edit="1">✎</button>'}
                     </div>
                     <span class="sch-arrow" aria-hidden="true">→</span>`;
                 // 行クリック → マップ同期
                 row.addEventListener('click', (e) => {
-                    if (e.target.closest('[data-edit]')) return; // 編集ボタンクリック時は除外
+                    if (e.target.closest('[data-edit]')) return;
                     if (item.location) showMapForLocation(item.location);
                 });
                 row.addEventListener('keydown', (e) => {
@@ -1877,14 +2155,127 @@
                         if (item.location) showMapForLocation(item.location);
                     }
                 });
-                // 編集ボタン
-                row.querySelector('[data-edit]').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openModal(item._idx);
-                });
+                // 編集ボタン (BREAKのみ)
+                if (!readonly) {
+                    const editBtn = row.querySelector('[data-edit]');
+                    if (editBtn) {
+                        editBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openModal(item._idx);
+                        });
+                    }
+                }
                 container.appendChild(row);
             });
             observeReveal();
+            updateGenreBadges();
+        }
+
+        /* ===========================================================
+           GENRE TABS + SWIPE
+           =========================================================== */
+        function setupGenreTabs() {
+            const tabsEl = document.getElementById('genre-tabs');
+            tabsEl.innerHTML = '';
+            GENRES.forEach(g => {
+                const btn = document.createElement('button');
+                btn.className = 'genre-tab' + (g.id === currentGenre ? ' active' : '') + (g.isMain ? ' is-main' : '');
+                btn.dataset.genre = g.id;
+                btn.innerHTML = `${g.label}<span class="badge" data-count></span>`;
+                btn.addEventListener('click', () => switchGenre(g.id));
+                tabsEl.appendChild(btn);
+            });
+            updateGenreBadges();
+        }
+
+        function updateGenreBadges() {
+            GENRES.forEach(g => {
+                const btn = document.querySelector(`.genre-tab[data-genre="${g.id}"]`);
+                if (!btn) return;
+                const badge = btn.querySelector('[data-count]');
+                if (!badge) return;
+                let items;
+                if (g.id === 'break') items = userSchedule;
+                else items = otherGenresSchedule[g.id] || [];
+                const today = new Date(); today.setHours(0,0,0,0);
+                const upcoming = items.filter(it => {
+                    const d = parseDate(it.date);
+                    return d && d >= today;
+                });
+                badge.textContent = upcoming.length;
+                badge.style.display = upcoming.length > 0 ? '' : 'none';
+            });
+        }
+
+        function switchGenre(genreId, opts) {
+            if (genreId === currentGenre) return;
+            const oldIdx = GENRES.findIndex(g => g.id === currentGenre);
+            const newIdx = GENRES.findIndex(g => g.id === genreId);
+            if (newIdx < 0) return;
+            const direction = newIdx > oldIdx ? 'left' : 'right'; // 新しい方が右なら左へスライドアウト
+            currentGenre = genreId;
+
+            // タブのactive状態更新
+            document.querySelectorAll('.genre-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.genre === genreId);
+            });
+            // アクティブタブを画面内にスクロール
+            const activeTab = document.querySelector('.genre-tab.active');
+            if (activeTab) {
+                activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+
+            // スライドアニメーション
+            const list = document.getElementById('schedule-container');
+            list.classList.add(direction === 'left' ? 'slide-out-left' : 'slide-out-right');
+            setTimeout(() => {
+                list.classList.remove('slide-out-left', 'slide-out-right');
+                renderSchedule();
+                list.classList.add(direction === 'left' ? 'slide-in-left' : 'slide-in-right');
+                setTimeout(() => {
+                    list.classList.remove('slide-in-left', 'slide-in-right');
+                }, 350);
+            }, 200);
+
+            // マップは閉じる
+            const map = document.getElementById('schedule-map-wrap');
+            if (map) map.style.display = 'none';
+        }
+
+        function setupSwipe() {
+            const wrap = document.getElementById('schedule-swipe-wrap');
+            if (!wrap) return;
+            let startX = 0, startY = 0, deltaX = 0, deltaY = 0;
+            let isSwiping = false;
+            const threshold = 60; // ピクセル
+
+            wrap.addEventListener('touchstart', (e) => {
+                if (e.touches.length !== 1) return;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                deltaX = 0; deltaY = 0;
+                isSwiping = false;
+            }, { passive: true });
+
+            wrap.addEventListener('touchmove', (e) => {
+                if (e.touches.length !== 1) return;
+                deltaX = e.touches[0].clientX - startX;
+                deltaY = e.touches[0].clientY - startY;
+                // 横方向が縦方向より大きく、しきい値超えたらスワイプ判定
+                if (!isSwiping && Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                    isSwiping = true;
+                }
+            }, { passive: true });
+
+            wrap.addEventListener('touchend', () => {
+                if (!isSwiping || Math.abs(deltaX) < threshold) return;
+                const currIdx = GENRES.findIndex(g => g.id === currentGenre);
+                if (deltaX < 0 && currIdx < GENRES.length - 1) {
+                    switchGenre(GENRES[currIdx + 1].id);
+                } else if (deltaX > 0 && currIdx > 0) {
+                    switchGenre(GENRES[currIdx - 1].id);
+                }
+            });
         }
 
         /* ===========================================================
@@ -2091,6 +2482,229 @@
                 userSchedule = JSON.parse(JSON.stringify(SCHEDULE));
                 renderSchedule();
                 await commitSchedule(userSchedule);
+            });
+        }
+
+        /* ===========================================================
+           SPREADSHEET IMPORT
+           サークル配布スプシ (ジャンル別練習場所) から自動取り込み
+           =========================================================== */
+        // CSV パーサー (クォート対応)
+        function parseCSV(text) {
+            const rows = []; let row = [], field = '', inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i], n = text[i+1];
+                if (inQuotes) {
+                    if (c === '"' && n === '"') { field += '"'; i++; }
+                    else if (c === '"') { inQuotes = false; }
+                    else { field += c; }
+                } else {
+                    if (c === '"') { inQuotes = true; }
+                    else if (c === ',') { row.push(field); field = ''; }
+                    else if (c === '\n' || c === '\r') {
+                        if (c === '\r' && n === '\n') i++;
+                        row.push(field); field = '';
+                        if (row.some(v => v.trim() !== '')) rows.push(row);
+                        row = [];
+                    } else { field += c; }
+                }
+            }
+            if (field !== '' || row.length) { row.push(field); rows.push(row); }
+            return rows;
+        }
+
+        // 「5/2(土)」みたいな日付を Date に
+        function parseSpreadsheetDate(str) {
+            if (!str) return null;
+            const m = String(str).match(/(\d{1,2})\/(\d{1,2})/);
+            if (!m) return null;
+            const today = new Date();
+            let year = today.getFullYear();
+            const d = new Date(year, +m[1] - 1, +m[2]);
+            // 6ヶ月以上過去なら来年扱い (年度またぎ対応)
+            if (d < today && (today - d) > 1000*60*60*24*180) {
+                d.setFullYear(year + 1);
+            }
+            return d;
+        }
+
+        // スプシURL → CSV取得 → 全ジャンル分のデータ抽出
+        async function fetchAllGenresFromSheet(url) {
+            // URLからspreadsheet ID と gid を抽出
+            const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (!idMatch) throw new Error('スプシのURLが正しくありません');
+            const gidMatch = url.match(/[?&#]gid=(\d+)/);
+            const id = idMatch[1];
+            const gid = gidMatch ? gidMatch[1] : '0';
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`;
+
+            const res = await fetch(csvUrl);
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) {
+                    throw new Error('スプシが非公開。「リンクを知っている全員」に共有してください');
+                }
+                throw new Error('取得失敗 (HTTP ' + res.status + ')');
+            }
+            const text = await res.text();
+            if (text.trim().startsWith('<')) {
+                throw new Error('スプシが見つからないか非公開です');
+            }
+            const rows = parseCSV(text);
+
+            // 全ジャンル分のデータを抽出
+            const result = {}; // { break: [], hiphop1: [], ... }
+            GENRES.forEach(g => { result[g.id] = []; });
+
+            for (let i = 1; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r || r.length === 0) continue;
+                const dateStr = (r[0] || '').trim();
+                const d = parseSpreadsheetDate(dateStr);
+                if (!d) continue;
+                const isoDate = d.getFullYear() + '-'
+                    + String(d.getMonth()+1).padStart(2,'0') + '-'
+                    + String(d.getDate()).padStart(2,'0');
+
+                GENRES.forEach(g => {
+                    const location = (r[g.col] || '').trim();
+                    const time = (r[g.col + 1] || '').trim();
+                    if (!location) return;
+                    result[g.id].push({
+                        date: isoDate,
+                        time: time,
+                        location: location,
+                        memo: '',
+                        _originalDate: dateStr
+                    });
+                });
+            }
+            return result;
+        }
+
+        // インポートモーダル制御
+        let importedData = {}; // 全ジャンル分のデータ
+        function openImportModal() {
+            document.getElementById('import-modal').classList.add('show');
+            document.getElementById('import-modal').setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('imp-preview').style.display = 'none';
+            document.getElementById('imp-status').textContent = '';
+            document.getElementById('imp-status').className = 'import-status';
+            document.getElementById('btn-imp-apply').disabled = true;
+            importedData = {};
+        }
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.remove('show');
+            document.getElementById('import-modal').setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function setupImport() {
+            document.getElementById('btn-import').addEventListener('click', openImportModal);
+            document.getElementById('import-modal-close').addEventListener('click', closeImportModal);
+            document.getElementById('btn-imp-cancel').addEventListener('click', closeImportModal);
+            document.getElementById('import-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'import-modal') closeImportModal();
+            });
+
+            // 読み込みボタン
+            document.getElementById('btn-imp-fetch').addEventListener('click', async () => {
+                const url = document.getElementById('imp-url').value.trim();
+                const statusEl = document.getElementById('imp-status');
+                const previewEl = document.getElementById('imp-preview');
+                const applyBtn = document.getElementById('btn-imp-apply');
+
+                if (!url) {
+                    statusEl.textContent = 'スプシのURLを入力してください';
+                    statusEl.className = 'import-status error';
+                    return;
+                }
+                statusEl.textContent = '取得中...';
+                statusEl.className = 'import-status';
+                previewEl.style.display = 'none';
+                applyBtn.disabled = true;
+
+                try {
+                    importedData = await fetchAllGenresFromSheet(url);
+                    // 件数集計
+                    const summary = GENRES.map(g => ({
+                        id: g.id, label: g.label,
+                        count: (importedData[g.id] || []).length
+                    }));
+                    const totalCount = summary.reduce((a, b) => a + b.count, 0);
+                    if (totalCount === 0) {
+                        statusEl.textContent = '取り込めるデータがありませんでした';
+                        statusEl.className = 'import-status error';
+                        return;
+                    }
+                    // ジャンルごとのサマリープレビュー
+                    let html = `<div class="preview-head">全ジャンル <span>${totalCount}件</span> 取得</div>`;
+                    summary.forEach(s => {
+                        if (s.count === 0) return;
+                        html += `<div class="preview-row">
+                            <strong>${escapeHtml(s.label)}</strong>
+                            <span>${s.count}件</span>
+                            <span></span>
+                        </div>`;
+                    });
+                    previewEl.innerHTML = html;
+                    previewEl.style.display = 'block';
+                    statusEl.textContent = '「適用」で全ジャンルが反映されます';
+                    statusEl.className = 'import-status success';
+                    applyBtn.disabled = false;
+                } catch (err) {
+                    statusEl.textContent = '読み込み失敗: ' + err.message;
+                    statusEl.className = 'import-status error';
+                    console.error('[Import]', err);
+                }
+            });
+
+            // 適用ボタン
+            document.getElementById('btn-imp-apply').addEventListener('click', async () => {
+                if (Object.keys(importedData).length === 0) return;
+                const mode = document.querySelector('input[name="imp-mode"]:checked').value;
+
+                // BREAK は userSchedule (共有DB対象)
+                const breakItems = (importedData.break || []).map(it => ({
+                    date: it.date, time: it.time, location: it.location, memo: it.memo
+                }));
+                if (mode === 'replace') {
+                    if (!confirm('既存の予定をすべて置き換えます。BREAKは共有DBにも反映されます。よろしいですか?')) return;
+                    userSchedule = breakItems;
+                    // 他ジャンルも全部置き換え
+                    otherGenresSchedule = {};
+                    GENRES.forEach(g => {
+                        if (g.id === 'break') return;
+                        otherGenresSchedule[g.id] = (importedData[g.id] || []).map(it => ({
+                            date: it.date, time: it.time, location: it.location, memo: it.memo
+                        }));
+                    });
+                } else {
+                    // 追加モード: 同じ日付+場所は重複として排除
+                    const breakExisting = new Set(userSchedule.map(it => `${it.date}|${it.location}`));
+                    breakItems.forEach(it => {
+                        if (!breakExisting.has(`${it.date}|${it.location}`)) {
+                            userSchedule.push(it);
+                        }
+                    });
+                    // 他ジャンルにも追加
+                    GENRES.forEach(g => {
+                        if (g.id === 'break') return;
+                        if (!otherGenresSchedule[g.id]) otherGenresSchedule[g.id] = [];
+                        const existing = new Set(otherGenresSchedule[g.id].map(it => `${it.date}|${it.location}`));
+                        (importedData[g.id] || []).forEach(it => {
+                            if (!existing.has(`${it.date}|${it.location}`)) {
+                                otherGenresSchedule[g.id].push({
+                                    date: it.date, time: it.time, location: it.location, memo: it.memo
+                                });
+                            }
+                        });
+                    });
+                }
+                saveOtherGenres(otherGenresSchedule);
+                renderSchedule();
+                await commitSchedule(userSchedule);
+                closeImportModal();
             });
         }
 
@@ -2448,8 +3062,12 @@
 
             // schedule: まずローカルから即座に表示
             userSchedule = loadSchedule();
+            otherGenresSchedule = loadOtherGenres();
+            setupGenreTabs();
+            setupSwipe();
             renderSchedule();
             setupScheduleEditing();
+            setupImport();
 
             // 共有モード: リモートと同期
             if (isSharedMode()) {
