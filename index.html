@@ -701,6 +701,55 @@
             pointer-events: none;
         }
 
+        /* LIVE ドット (IMPORTボタンの自動同期中表示) */
+        .live-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--cyan);
+            margin-left: 6px;
+            vertical-align: middle;
+            animation: livePulse 2s infinite ease-in-out;
+            box-shadow: 0 0 6px var(--cyan-glow);
+        }
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.6); }
+        }
+
+        /* 同期トースト */
+        .sync-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elev);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 1px;
+            padding: 12px 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 24px var(--cyan-glow);
+            z-index: 10001;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease, transform .35s cubic-bezier(.2,.8,.2,1);
+        }
+        .sync-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .sync-toast::before {
+            content: '●';
+            color: var(--cyan);
+            margin-right: 8px;
+            animation: livePulse 1.5s infinite;
+        }
+        @media (max-width: 600px) {
+            .sync-toast { font-size: 11px; padding: 10px 18px; bottom: 20px; }
+        }
+
         /* mobile */
         @media (max-width: 880px) {
             .schedule-controls { gap: 10px; }
@@ -1469,7 +1518,10 @@
                 </span>
             </div>
             <div class="schedule-buttons">
-                <button class="btn btn-ghost" id="btn-import" title="スプレッドシートから読み込む">IMPORT</button>
+                <button class="btn btn-ghost" id="btn-import" title="スプレッドシートから読み込む">
+                    <span id="btn-import-label">IMPORT</span>
+                    <span id="btn-import-live" class="live-dot" style="display:none;" title="自動同期中"></span>
+                </button>
                 <button class="btn btn-ghost" id="btn-reset" title="初期データに戻す">RESET</button>
                 <button class="btn btn-primary" id="btn-add">+ ADD</button>
             </div>
@@ -1654,7 +1706,7 @@
                 <div id="imp-preview" class="import-preview" style="display:none;"></div>
                 <div id="imp-status" class="import-status"></div>
                 <div class="form-actions">
-                    <div></div>
+                    <button type="button" class="btn btn-ghost btn-danger hidden" id="btn-imp-unlink" title="保存されたスプシURLをクリア">解除</button>
                     <div class="form-actions-right">
                         <button type="button" class="btn btn-ghost" id="btn-imp-cancel">キャンセル</button>
                         <button type="button" class="btn btn-ghost" id="btn-imp-fetch">読み込み</button>
@@ -1903,7 +1955,22 @@
         const SCHEDULE_STORAGE_KEY = 'eagle-schedule-v1';
         const OTHER_GENRES_STORAGE_KEY = 'eagle-other-genres-v1';
         const SCHEDULE_BACKUP_KEY = 'eagle-schedule-backup-v1';
+        const SHEET_URL_KEY = 'eagle-sheet-url-v1';
         const JSONBIN_BASE = 'https://api.jsonbin.io/v3/b/';
+
+        // 保存されたスプシURLを読む/保存する
+        function getSavedSheetUrl() {
+            try { return localStorage.getItem(SHEET_URL_KEY) || ''; }
+            catch (e) { return ''; }
+        }
+        function saveSheetUrl(url) {
+            try { localStorage.setItem(SHEET_URL_KEY, url); }
+            catch (e) {}
+        }
+        function clearSavedSheetUrl() {
+            try { localStorage.removeItem(SHEET_URL_KEY); }
+            catch (e) {}
+        }
 
         /* ===========================================================
            GENRES (スプシの列インデックスとひも付け)
@@ -2528,6 +2595,40 @@
             return d;
         }
 
+        // ヘッダー行を探す (ジャンル名が並んでる行)
+        function findHeaderRowIndex(rows) {
+            for (let i = 0; i < Math.min(8, rows.length); i++) {
+                const r = rows[i];
+                if (!r) continue;
+                const text = r.join(' ').toLowerCase();
+                // 'break' と 'hiphop' の両方を含む行をヘッダーとみなす
+                if (text.includes('break') && text.includes('hiphop')) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        // ヘッダー行から各ジャンルの「場所」列番号を検出
+        // スプシ構造: ジャンル列 (場所) | 隣の列 (時間)
+        function detectGenreColumns(headerRow) {
+            const mapping = {};
+            // ジャンルIDを正規化 (空白・記号除去・小文字化)
+            const norm = (s) => String(s || '').toLowerCase()
+                .replace(/\s+/g, '').replace(/[-_/]/g, '').trim();
+            GENRES.forEach(g => {
+                const target = norm(g.id);
+                for (let i = 0; i < headerRow.length; i++) {
+                    const cell = norm(headerRow[i]);
+                    if (cell === target) {
+                        mapping[g.id] = i;
+                        return;
+                    }
+                }
+            });
+            return mapping;
+        }
+
         // スプシURL → CSV取得 → 全ジャンル分のデータ抽出
         async function fetchAllGenresFromSheet(url) {
             // URLからspreadsheet ID と gid を抽出
@@ -2551,11 +2652,30 @@
             }
             const rows = parseCSV(text);
 
+            // ヘッダー行を探して、ジャンル列を自動マッピング
+            const headerIdx = findHeaderRowIndex(rows);
+            const headerRow = rows[headerIdx] || [];
+            const detectedCols = detectGenreColumns(headerRow);
+            console.log('[Sheet] header row index:', headerIdx);
+            console.log('[Sheet] header:', headerRow);
+            console.log('[Sheet] detected columns:', detectedCols);
+
+            // 各ジャンルの場所列をマップ (検出失敗時はフォールバック)
+            const colMap = {};
+            GENRES.forEach(g => {
+                if (detectedCols[g.id] !== undefined) {
+                    colMap[g.id] = detectedCols[g.id];
+                } else {
+                    colMap[g.id] = g.col;
+                    console.warn(`[Sheet] "${g.id}" 列を自動検出できず、デフォルト ${g.col} を使用`);
+                }
+            });
+
             // 全ジャンル分のデータを抽出
-            const result = {}; // { break: [], hiphop1: [], ... }
+            const result = {};
             GENRES.forEach(g => { result[g.id] = []; });
 
-            for (let i = 1; i < rows.length; i++) {
+            for (let i = headerIdx + 1; i < rows.length; i++) {
                 const r = rows[i];
                 if (!r || r.length === 0) continue;
                 const dateStr = (r[0] || '').trim();
@@ -2565,10 +2685,30 @@
                     + String(d.getMonth()+1).padStart(2,'0') + '-'
                     + String(d.getDate()).padStart(2,'0');
 
+                // 曜日からデフォルト時間を割り出す
+                // 火(2)・木(4) → 18:00-21:00 / 土(6) → 17:00-20:00
+                const dow = d.getDay();
+                let defaultTime = '';
+                if (dow === 2 || dow === 4) defaultTime = '18:00-21:00';
+                else if (dow === 6) defaultTime = '17:00-20:00';
+
                 GENRES.forEach(g => {
-                    const location = (r[g.col] || '').trim();
-                    const time = (r[g.col + 1] || '').trim();
-                    if (!location) return;
+                    const col = colMap[g.id];
+                    let location = (r[col] || '').trim();
+                    let time = (r[col + 1] || '').trim();
+
+                    if (g.id === 'break') {
+                        // BREAK は特別: 空欄でも「上智大学」として必ず追加
+                        if (!location) location = '上智大学';
+                    } else {
+                        // 他ジャンル: 場所も時間も両方空ならスキップ
+                        if (!location && !time) return;
+                        if (!location) location = '上智大学';
+                    }
+
+                    // 時間が空なら曜日のデフォルトで埋める
+                    if (!time) time = defaultTime;
+
                     result[g.id].push({
                         date: isoDate,
                         time: time,
@@ -2592,6 +2732,19 @@
             document.getElementById('imp-status').className = 'import-status';
             document.getElementById('btn-imp-apply').disabled = true;
             importedData = {};
+            // 保存済みURLがあれば復元 (前回IMPORTしたスプシ)
+            const savedUrl = getSavedSheetUrl();
+            if (savedUrl && !document.getElementById('imp-url').value) {
+                document.getElementById('imp-url').value = savedUrl;
+            }
+            // 解除ボタン表示制御
+            const unlinkBtn = document.getElementById('btn-imp-unlink');
+            if (savedUrl) {
+                unlinkBtn.classList.remove('hidden');
+                unlinkBtn.textContent = '自動同期解除';
+            } else {
+                unlinkBtn.classList.add('hidden');
+            }
         }
         function closeImportModal() {
             document.getElementById('import-modal').classList.remove('show');
@@ -2605,6 +2758,18 @@
             document.getElementById('btn-imp-cancel').addEventListener('click', closeImportModal);
             document.getElementById('import-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'import-modal') closeImportModal();
+            });
+
+            // 自動同期解除ボタン
+            document.getElementById('btn-imp-unlink').addEventListener('click', () => {
+                if (!confirm('スプシの自動同期を解除します。\n保存済みのスケジュールは消えません。\nよろしいですか?')) return;
+                clearSavedSheetUrl();
+                if (sheetSyncTimer) clearInterval(sheetSyncTimer);
+                sheetSyncTimer = null;
+                updateLiveDot();
+                document.getElementById('btn-imp-unlink').classList.add('hidden');
+                document.getElementById('imp-status').textContent = '自動同期を解除しました';
+                document.getElementById('imp-status').className = 'import-status success';
             });
 
             // 読み込みボタン
@@ -2663,49 +2828,150 @@
             document.getElementById('btn-imp-apply').addEventListener('click', async () => {
                 if (Object.keys(importedData).length === 0) return;
                 const mode = document.querySelector('input[name="imp-mode"]:checked').value;
+                const url = document.getElementById('imp-url').value.trim();
 
-                // BREAK は userSchedule (共有DB対象)
-                const breakItems = (importedData.break || []).map(it => ({
-                    date: it.date, time: it.time, location: it.location, memo: it.memo
-                }));
-                if (mode === 'replace') {
-                    if (!confirm('既存の予定をすべて置き換えます。BREAKは共有DBにも反映されます。よろしいですか?')) return;
-                    userSchedule = breakItems;
-                    // 他ジャンルも全部置き換え
-                    otherGenresSchedule = {};
-                    GENRES.forEach(g => {
-                        if (g.id === 'break') return;
-                        otherGenresSchedule[g.id] = (importedData[g.id] || []).map(it => ({
-                            date: it.date, time: it.time, location: it.location, memo: it.memo
-                        }));
-                    });
-                } else {
-                    // 追加モード: 同じ日付+場所は重複として排除
-                    const breakExisting = new Set(userSchedule.map(it => `${it.date}|${it.location}`));
-                    breakItems.forEach(it => {
-                        if (!breakExisting.has(`${it.date}|${it.location}`)) {
-                            userSchedule.push(it);
-                        }
-                    });
-                    // 他ジャンルにも追加
-                    GENRES.forEach(g => {
-                        if (g.id === 'break') return;
-                        if (!otherGenresSchedule[g.id]) otherGenresSchedule[g.id] = [];
-                        const existing = new Set(otherGenresSchedule[g.id].map(it => `${it.date}|${it.location}`));
-                        (importedData[g.id] || []).forEach(it => {
-                            if (!existing.has(`${it.date}|${it.location}`)) {
-                                otherGenresSchedule[g.id].push({
-                                    date: it.date, time: it.time, location: it.location, memo: it.memo
-                                });
-                            }
-                        });
-                    });
+                await applyImportedData(importedData, mode, { interactive: true });
+
+                // URLを保存して自動同期対象にする
+                if (url) {
+                    saveSheetUrl(url);
+                    startSheetAutoSync();
                 }
-                saveOtherGenres(otherGenresSchedule);
-                renderSchedule();
-                await commitSchedule(userSchedule);
                 closeImportModal();
             });
+        }
+
+        /* ===========================================================
+           インポートしたデータを userSchedule / otherGenresSchedule に反映
+           interactive=true: confirm出す, false: サイレント (自動同期用)
+           =========================================================== */
+        async function applyImportedData(data, mode, opts) {
+            opts = opts || {};
+            // BREAK は userSchedule (共有DB対象)
+            const breakItems = (data.break || []).map(it => ({
+                date: it.date, time: it.time, location: it.location, memo: it.memo
+            }));
+            if (mode === 'replace') {
+                if (opts.interactive) {
+                    if (!confirm('既存の予定をすべて置き換えます。BREAKは共有DBにも反映されます。よろしいですか?')) return false;
+                }
+                userSchedule = breakItems;
+                otherGenresSchedule = {};
+                GENRES.forEach(g => {
+                    if (g.id === 'break') return;
+                    otherGenresSchedule[g.id] = (data[g.id] || []).map(it => ({
+                        date: it.date, time: it.time, location: it.location, memo: it.memo
+                    }));
+                });
+            } else {
+                // 追加モード: 同じ日付+場所は重複として排除
+                const breakExisting = new Set(userSchedule.map(it => `${it.date}|${it.location}`));
+                breakItems.forEach(it => {
+                    if (!breakExisting.has(`${it.date}|${it.location}`)) {
+                        userSchedule.push(it);
+                    }
+                });
+                GENRES.forEach(g => {
+                    if (g.id === 'break') return;
+                    if (!otherGenresSchedule[g.id]) otherGenresSchedule[g.id] = [];
+                    const existing = new Set(otherGenresSchedule[g.id].map(it => `${it.date}|${it.location}`));
+                    (data[g.id] || []).forEach(it => {
+                        if (!existing.has(`${it.date}|${it.location}`)) {
+                            otherGenresSchedule[g.id].push({
+                                date: it.date, time: it.time, location: it.location, memo: it.memo
+                            });
+                        }
+                    });
+                });
+            }
+            saveOtherGenres(otherGenresSchedule);
+
+            // スクロール位置を保持して再描画
+            const scrollY = window.scrollY;
+            renderSchedule();
+            window.scrollTo({ top: scrollY, left: 0, behavior: 'instant' });
+
+            await commitSchedule(userSchedule);
+            return true;
+        }
+
+        /* ===========================================================
+           スプシ自動同期 (URLが保存されてたら定期的にチェック)
+           =========================================================== */
+        let sheetSyncTimer = null;
+        const SHEET_SYNC_INTERVAL = 5 * 60 * 1000; // 5分
+
+        // 全ジャンルデータのスナップショット (内容比較用)
+        function snapshotData(data) {
+            const all = {};
+            GENRES.forEach(g => {
+                const items = data[g.id] || [];
+                all[g.id] = items.map(it =>
+                    `${it.date}|${it.time}|${it.location}|${it.memo || ''}`
+                ).sort().join(',');
+            });
+            return JSON.stringify(all);
+        }
+
+        async function syncFromSheet(silent) {
+            const url = getSavedSheetUrl();
+            if (!url) return;
+            try {
+                const data = await fetchAllGenresFromSheet(url);
+                // モーダル開いてる時はスキップ (編集中の事故防止)
+                if (document.getElementById('modal').classList.contains('show') ||
+                    document.getElementById('import-modal').classList.contains('show')) {
+                    console.log('[SheetSync] modal open, skipping');
+                    return;
+                }
+                // 内容ベースで差分判定 (件数だけだと時間補完変更を見逃す)
+                const newSnap = snapshotData(data);
+                const currentData = { break: userSchedule, ...otherGenresSchedule };
+                const oldSnap = snapshotData(currentData);
+                if (newSnap !== oldSnap) {
+                    const newTotal = GENRES.reduce((sum, g) => sum + ((data[g.id] || []).length), 0);
+                    console.log(`[SheetSync] 差分検出、更新します (合計${newTotal}件)`);
+                    await applyImportedData(data, 'replace', { interactive: false });
+                    showSyncToast(`スプシから ${newTotal}件を更新`);
+                } else {
+                    console.log('[SheetSync] 変更なし');
+                }
+            } catch (e) {
+                console.warn('[SheetSync] failed:', e.message);
+            }
+        }
+
+        function updateLiveDot() {
+            const dot = document.getElementById('btn-import-live');
+            if (!dot) return;
+            dot.style.display = getSavedSheetUrl() ? '' : 'none';
+        }
+
+        function startSheetAutoSync() {
+            if (sheetSyncTimer) clearInterval(sheetSyncTimer);
+            const url = getSavedSheetUrl();
+            if (!url) {
+                updateLiveDot();
+                return;
+            }
+            // 即座に1回 + その後5分ごと
+            syncFromSheet(true);
+            sheetSyncTimer = setInterval(() => syncFromSheet(true), SHEET_SYNC_INTERVAL);
+            updateLiveDot();
+            console.log('[SheetSync] auto-sync started');
+        }
+
+        function showSyncToast(msg) {
+            let toast = document.getElementById('sync-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'sync-toast';
+                toast.className = 'sync-toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
         /* ===========================================================
@@ -3068,6 +3334,13 @@
             renderSchedule();
             setupScheduleEditing();
             setupImport();
+
+            // スプシ自動同期スタート (URL保存されてれば)
+            startSheetAutoSync();
+            // タブが visible に戻った時にも同期チェック
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && getSavedSheetUrl()) syncFromSheet(true);
+            });
 
             // 共有モード: リモートと同期
             if (isSharedMode()) {
