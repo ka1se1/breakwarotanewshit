@@ -1974,21 +1974,50 @@
 
         /* ===========================================================
            GENRES (スプシの列インデックスとひも付け)
+           統合版 (hiphop) と分割版 (hiphop1, hiphop2) 両方登録しておき、
+           スプシのヘッダーで実際に見つかったものだけタブ表示する
            =========================================================== */
         const GENRES = [
             { id: 'break',   label: 'BREAK',    col: 10, isMain: true },
+            { id: 'hiphop',  label: 'HIPHOP',   col: 2 },
             { id: 'hiphop1', label: 'HIPHOP 1', col: 2 },
             { id: 'hiphop2', label: 'HIPHOP 2', col: 4 },
+            { id: 'lock',    label: 'LOCK',     col: 6 },
             { id: 'lock1',   label: 'LOCK 1',   col: 6 },
             { id: 'lock2',   label: 'LOCK 2',   col: 8 },
             { id: 'jazz',    label: 'JAZZ',     col: 12 },
             { id: 'pop',     label: 'POP',      col: 14 },
             { id: 'house',   label: 'HOUSE',    col: 16 },
+            { id: 'girls',   label: 'GIRLS',    col: 18 },
             { id: 'girls1',  label: 'GIRLS 1',  col: 18 },
             { id: 'girls2',  label: 'GIRLS 2',  col: 20 }
         ];
 
-        let currentGenre = 'break'; // 表示中のジャンル
+        // 現在有効なジャンル (スプシで検出されたもの)
+        const ACTIVE_GENRES_KEY = 'eagle-active-genres-v1';
+        const DEFAULT_ACTIVE_GENRES = ['break', 'hiphop1', 'hiphop2', 'lock1', 'lock2', 'jazz', 'pop', 'house', 'girls1', 'girls2'];
+
+        function loadActiveGenres() {
+            try {
+                const saved = localStorage.getItem(ACTIVE_GENRES_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {}
+            return [...DEFAULT_ACTIVE_GENRES];
+        }
+        function saveActiveGenres(ids) {
+            try { localStorage.setItem(ACTIVE_GENRES_KEY, JSON.stringify(ids)); } catch (e) {}
+        }
+        let activeGenres = loadActiveGenres();
+
+        // 現在有効なGENRESオブジェクトのリストを返す (順序維持)
+        function getActiveGenresList() {
+            return GENRES.filter(g => activeGenres.includes(g.id));
+        }
+
+        let currentGenre = 'break';
         let otherGenresSchedule = {}; // { hiphop1: [...], lock1: [...], ... }
 
         function loadOtherGenres() {
@@ -2244,7 +2273,10 @@
         function setupGenreTabs() {
             const tabsEl = document.getElementById('genre-tabs');
             tabsEl.innerHTML = '';
-            GENRES.forEach(g => {
+            // currentGenre が activeGenres に含まれてない場合は break にフォールバック
+            if (!activeGenres.includes(currentGenre)) currentGenre = 'break';
+
+            getActiveGenresList().forEach(g => {
                 const btn = document.createElement('button');
                 btn.className = 'genre-tab' + (g.id === currentGenre ? ' active' : '') + (g.isMain ? ' is-main' : '');
                 btn.dataset.genre = g.id;
@@ -2256,7 +2288,7 @@
         }
 
         function updateGenreBadges() {
-            GENRES.forEach(g => {
+            getActiveGenresList().forEach(g => {
                 const btn = document.querySelector(`.genre-tab[data-genre="${g.id}"]`);
                 if (!btn) return;
                 const badge = btn.querySelector('[data-count]');
@@ -2276,8 +2308,9 @@
 
         function switchGenre(genreId, opts) {
             if (genreId === currentGenre) return;
-            const oldIdx = GENRES.findIndex(g => g.id === currentGenre);
-            const newIdx = GENRES.findIndex(g => g.id === genreId);
+            const list = getActiveGenresList();
+            const oldIdx = list.findIndex(g => g.id === currentGenre);
+            const newIdx = list.findIndex(g => g.id === genreId);
             if (newIdx < 0) return;
             const direction = newIdx > oldIdx ? 'left' : 'right'; // 新しい方が右なら左へスライドアウト
             currentGenre = genreId;
@@ -2293,14 +2326,14 @@
             }
 
             // スライドアニメーション
-            const list = document.getElementById('schedule-container');
-            list.classList.add(direction === 'left' ? 'slide-out-left' : 'slide-out-right');
+            const listEl = document.getElementById('schedule-container');
+            listEl.classList.add(direction === 'left' ? 'slide-out-left' : 'slide-out-right');
             setTimeout(() => {
-                list.classList.remove('slide-out-left', 'slide-out-right');
+                listEl.classList.remove('slide-out-left', 'slide-out-right');
                 renderSchedule();
-                list.classList.add(direction === 'left' ? 'slide-in-left' : 'slide-in-right');
+                listEl.classList.add(direction === 'left' ? 'slide-in-left' : 'slide-in-right');
                 setTimeout(() => {
-                    list.classList.remove('slide-in-left', 'slide-in-right');
+                    listEl.classList.remove('slide-in-left', 'slide-in-right');
                 }, 350);
             }, 200);
 
@@ -2336,11 +2369,12 @@
 
             wrap.addEventListener('touchend', () => {
                 if (!isSwiping || Math.abs(deltaX) < threshold) return;
-                const currIdx = GENRES.findIndex(g => g.id === currentGenre);
-                if (deltaX < 0 && currIdx < GENRES.length - 1) {
-                    switchGenre(GENRES[currIdx + 1].id);
+                const list = getActiveGenresList();
+                const currIdx = list.findIndex(g => g.id === currentGenre);
+                if (deltaX < 0 && currIdx < list.length - 1) {
+                    switchGenre(list[currIdx + 1].id);
                 } else if (deltaX > 0 && currIdx > 0) {
-                    switchGenre(GENRES[currIdx - 1].id);
+                    switchGenre(list[currIdx - 1].id);
                 }
             });
         }
@@ -2611,9 +2645,10 @@
 
         // ヘッダー行から各ジャンルの「場所」列番号を検出
         // スプシ構造: ジャンル列 (場所) | 隣の列 (時間)
+        // 戻り値: { mapping: {id:col}, detected: [id, ...] }
         function detectGenreColumns(headerRow) {
             const mapping = {};
-            // ジャンルIDを正規化 (空白・記号除去・小文字化)
+            const detected = ['break']; // BREAKは必ず含める
             const norm = (s) => String(s || '').toLowerCase()
                 .replace(/\s+/g, '').replace(/[-_/]/g, '').trim();
             GENRES.forEach(g => {
@@ -2622,11 +2657,12 @@
                     const cell = norm(headerRow[i]);
                     if (cell === target) {
                         mapping[g.id] = i;
+                        if (!detected.includes(g.id)) detected.push(g.id);
                         return;
                     }
                 }
             });
-            return mapping;
+            return { mapping, detected };
         }
 
         // スプシURL → CSV取得 → 全ジャンル分のデータ抽出
@@ -2655,25 +2691,33 @@
             // ヘッダー行を探して、ジャンル列を自動マッピング
             const headerIdx = findHeaderRowIndex(rows);
             const headerRow = rows[headerIdx] || [];
-            const detectedCols = detectGenreColumns(headerRow);
+            const detectResult = detectGenreColumns(headerRow);
             console.log('[Sheet] header row index:', headerIdx);
             console.log('[Sheet] header:', headerRow);
-            console.log('[Sheet] detected columns:', detectedCols);
+            console.log('[Sheet] detected:', detectResult.detected);
+            console.log('[Sheet] columns:', detectResult.mapping);
 
-            // 各ジャンルの場所列をマップ (検出失敗時はフォールバック)
+            // 検出されたジャンルだけ activeGenres を更新
+            // (検出失敗時は前回の状態を維持)
+            if (detectResult.detected.length > 1) {
+                activeGenres = detectResult.detected;
+                saveActiveGenres(activeGenres);
+            }
+
+            // 列マッピング (検出失敗ジャンルはフォールバック値)
             const colMap = {};
-            GENRES.forEach(g => {
-                if (detectedCols[g.id] !== undefined) {
-                    colMap[g.id] = detectedCols[g.id];
+            getActiveGenresList().forEach(g => {
+                if (detectResult.mapping[g.id] !== undefined) {
+                    colMap[g.id] = detectResult.mapping[g.id];
                 } else {
                     colMap[g.id] = g.col;
                     console.warn(`[Sheet] "${g.id}" 列を自動検出できず、デフォルト ${g.col} を使用`);
                 }
             });
 
-            // 全ジャンル分のデータを抽出
+            // アクティブジャンル分のデータを抽出
             const result = {};
-            GENRES.forEach(g => { result[g.id] = []; });
+            getActiveGenresList().forEach(g => { result[g.id] = []; });
 
             for (let i = headerIdx + 1; i < rows.length; i++) {
                 const r = rows[i];
@@ -2692,7 +2736,7 @@
                 if (dow === 2 || dow === 4) defaultTime = '18:00-21:00';
                 else if (dow === 6) defaultTime = '17:00-20:00';
 
-                GENRES.forEach(g => {
+                getActiveGenresList().forEach(g => {
                     const col = colMap[g.id];
                     let location = (r[col] || '').trim();
                     let time = (r[col + 1] || '').trim();
@@ -2857,7 +2901,7 @@
                 }
                 userSchedule = breakItems;
                 otherGenresSchedule = {};
-                GENRES.forEach(g => {
+                getActiveGenresList().forEach(g => {
                     if (g.id === 'break') return;
                     otherGenresSchedule[g.id] = (data[g.id] || []).map(it => ({
                         date: it.date, time: it.time, location: it.location, memo: it.memo
@@ -2871,7 +2915,7 @@
                         userSchedule.push(it);
                     }
                 });
-                GENRES.forEach(g => {
+                getActiveGenresList().forEach(g => {
                     if (g.id === 'break') return;
                     if (!otherGenresSchedule[g.id]) otherGenresSchedule[g.id] = [];
                     const existing = new Set(otherGenresSchedule[g.id].map(it => `${it.date}|${it.location}`));
@@ -2885,6 +2929,9 @@
                 });
             }
             saveOtherGenres(otherGenresSchedule);
+
+            // タブ構成も更新 (検出ジャンルが変わってる可能性)
+            setupGenreTabs();
 
             // スクロール位置を保持して再描画
             const scrollY = window.scrollY;
@@ -2904,7 +2951,7 @@
         // 全ジャンルデータのスナップショット (内容比較用)
         function snapshotData(data) {
             const all = {};
-            GENRES.forEach(g => {
+            getActiveGenresList().forEach(g => {
                 const items = data[g.id] || [];
                 all[g.id] = items.map(it =>
                     `${it.date}|${it.time}|${it.location}|${it.memo || ''}`
@@ -2929,7 +2976,7 @@
                 const currentData = { break: userSchedule, ...otherGenresSchedule };
                 const oldSnap = snapshotData(currentData);
                 if (newSnap !== oldSnap) {
-                    const newTotal = GENRES.reduce((sum, g) => sum + ((data[g.id] || []).length), 0);
+                    const newTotal = getActiveGenresList().reduce((sum, g) => sum + ((data[g.id] || []).length), 0);
                     console.log(`[SheetSync] 差分検出、更新します (合計${newTotal}件)`);
                     await applyImportedData(data, 'replace', { interactive: false });
                     showSyncToast(`スプシから ${newTotal}件を更新`);
